@@ -77,6 +77,18 @@ app.get('/disclaimer', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'disclaimer.html'));
 });
 
+app.get('/refund-policy', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'refund-policy.html'));
+});
+
+app.get('/contact', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'contact.html'));
+});
+
+app.get('/help', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'contact.html'));
+});
+
 // Handle 404
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

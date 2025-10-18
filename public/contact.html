@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact & Help - GameBlast Mobile</title>
+    <meta name="description" content="Get help and contact support for GameBlast Mobile. We're here to assist you with any questions or issues.">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/legal.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">GameBlast Mobile</a>
+                
+                <nav class="nav-menu" id="navMenu">
+                    <a href="/">Home</a>
+                    <a href="/games">Games</a>
+                    <a href="/how-to-play">How to Play</a>
+                    <a href="/leaderboard">Leaderboard</a>
+                    <a href="/organiser">Organiser</a>
+                </nav>
+                
+                <div class="user-menu">
+                    <div id="authButtons">
+                        <a href="/login" class="btn btn-secondary">Login</a>
+                    </div>
+                    <div id="userMenu" style="display: none;"></div>
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>📞 Contact & Help Center</h1>
+            <p>We're here to help! Get support for any questions or issues.</p>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <div class="legal-container">
+        <div class="container">
+            
+            <!-- Quick Contact Info -->
+            <div class="contact-quick-info">
+                <div class="contact-methods">
+                    <div class="contact-method">
+                        <div class="contact-icon">📧</div>
+                        <div class="contact-details">
+                            <h3>Email Support</h3>
+                            <p><a href="mailto:support@gameblast.com">support@gameblast.com</a></p>
+                            <span>Response within 24 hours</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-method">
+                        <div class="contact-icon">📱</div>
+                        <div class="contact-details">
+                            <h3>WhatsApp Support</h3>
+                            <p><a href="https://wa.me/+919876543210" target="_blank">+91 98765 43210</a></p>
+                            <span>Available 9 AM - 9 PM IST</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-method">
+                        <div class="contact-icon">⏰</div>
+                        <div class="contact-details">
+                            <h3>Support Hours</h3>
+                            <p>Monday - Sunday</p>
+                            <span>9:00 AM - 9:00 PM IST</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="contact-form-section">
+                <h2>📝 Send us a Message</h2>
+                <p>Fill out the form below and we'll get back to you as soon as possible.</p>
+                
+                <form class="contact-form" id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactName">Full Name *</label>
+                            <input type="text" id="contactName" name="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contactEmail">Email Address *</label>
+                            <input type="email" id="contactEmail" name="email" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactPhone">Phone Number</label>
+                            <input type="tel" id="contactPhone" name="phone">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contactType">I am a *</label>
+                            <select id="contactType" name="userType" required>
+                                <option value="">Select your role</option>
+                                <option value="user">User/Player</option>
+                                <option value="organiser">Organiser</option>
+                                <option value="potential_organiser">Potential Organiser</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contactSubject">Subject *</label>
+                        <select id="contactSubject" name="subject" required>
+                            <option value="">Select a topic</option>
+                            <option value="game_issue">Game Participation Issue</option>
+                            <option value="payment_issue">Payment/UTR Verification Issue</option>
+                            <option value="sheet_download">Sheet Download Problem</option>
+                            <option value="organiser_approval">Organiser Approval Status</option>
+                            <option value="technical_issue">Technical Problem</option>
+                            <option value="account_issue">Account/Login Issue</option>
+                            <option value="refund_request">Refund Request</option>
+                            <option value="feature_request">Feature Request</option>
+                            <option value="complaint">Complaint</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contactMessage">Message *</label>
+                        <textarea id="contactMessage" name="message" rows="6" placeholder="Please describe your issue or question in detail..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="contactConsent" name="consent" required>
+                            <span class="checkmark"></span>
+                            I agree to be contacted regarding my inquiry and accept the <a href="/privacy-policy">Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">Send Message</button>
+                </form>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="faq-section">
+                <h2>❓ Frequently Asked Questions</h2>
+                
+                <div class="faq-category">
+                    <h3>For Users/Players</h3>
+                    <div class="faq-items">
+                        <div class="faq-item">
+                            <div class="faq-question">How do I register for a game?</div>
+                            <div class="faq-answer">
+                                <p>1. Create an account and login</p>
+                                <p>2. Browse games and select one you want to join</p>
+                                <p>3. Choose your sheets and make payment via UPI</p>
+                                <p>4. Enter UTR ID for verification</p>
+                                <p>5. Wait for organiser approval</p>
+                                <p>6. Download your sheets once approved</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">My payment is not getting approved. What should I do?</div>
+                            <div class="faq-answer">
+                                <p>Contact the game organiser directly via WhatsApp (available on game page) with your UTR ID and payment screenshot. If still not resolved, contact our support.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">I can't download my sheets. Why?</div>
+                            <div class="faq-answer">
+                                <p>Sheets can only be downloaded after organiser approves your payment. Check your payment status in your dashboard or contact the organiser.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-category">
+                    <h3>For Organisers</h3>
+                    <div class="faq-items">
+                        <div class="faq-item">
+                            <div class="faq-question">How do I become an organiser?</div>
+                            <div class="faq-answer">
+                                <p>Register as an organiser with all required documents including Aadhaar. Pay the monthly fee of ₹2,500. Wait for admin approval. Once approved, you can create games.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">How do I set up Google Drive for sheets?</div>
+                            <div class="faq-answer">
+                                <p>Create a Google Drive folder, upload all your game sheets, make the folder public (Anyone with link can view), and paste the folder URL in game creation form.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">What is the monthly organiser fee for?</div>
+                            <div class="faq-answer">
+                                <p>The ₹2,500 monthly fee covers platform usage, payment verification system, sheet management, participant management, and technical support.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contact -->
+            <div class="emergency-contact">
+                <h2>🚨 Urgent Issues</h2>
+                <p>For urgent issues during live games or immediate assistance:</p>
+                <div class="emergency-buttons">
+                    <a href="https://wa.me/+919876543210" class="btn btn-primary" target="_blank">
+                        📱 WhatsApp Now
+                    </a>
+                    <a href="tel:+919876543210" class="btn btn-secondary">
+                        📞 Call Support
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="logo">GameBlast Mobile</h3>
+                    <p class="platform-tagline">Your Ultimate Mobile Gaming Experience</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/games">Games</a></li>
+                        <li><a href="/how-to-play">How to Play</a></li>
+                        <li><a href="/leaderboard">Leaderboard</a></li>
+                        <li><a href="/organiser">Become Organiser</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="/privacy-policy">Privacy Policy</a></li>
+                        <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                        <li><a href="/disclaimer">Disclaimer</a></li>
+                        <li><a href="/refund-policy">Refund Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <ul>
+                        <li><a href="mailto:support@gameblast.com">Support</a></li>
+                        <li><a href="/contact">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 GameBlast Mobile. All rights reserved. | Designed for mobile-first gaming experience.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/js/app.js"></script>
+    <script>
+        // Contact form handling
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                // Show loading state
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Sending...';
+                submitBtn.disabled = true;
+                
+                // In a real implementation, you'd send this to your API
+                // For now, we'll simulate success
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Show success message
+                alert('Thank you for your message! We\'ll get back to you within 24 hours.');
+                this.reset();
+                
+                // Reset button
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                
+            } catch (error) {
+                alert('Sorry, there was an error sending your message. Please try again or contact us directly.');
+                
+                // Reset button
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // FAQ toggle functionality
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', function() {
+                const faqItem = this.parentElement;
+                const answer = faqItem.querySelector('.faq-answer');
+                
+                faqItem.classList.toggle('active');
+                
+                if (faqItem.classList.contains('active')) {
+                    answer.style.display = 'block';
+                } else {
+                    answer.style.display = 'none';
+                }
+            });
+        });
+    </script>
+
+    <style>
+        /* Contact page specific styles */
+        .contact-quick-info {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 15px;
+        }
+
+        .contact-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .contact-method {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .contact-icon {
+            font-size: 2rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-color);
+            border-radius: 50%;
+        }
+
+        .contact-details h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--text-light);
+        }
+
+        .contact-details p {
+            margin: 0 0 0.25rem 0;
+            font-weight: 600;
+        }
+
+        .contact-details span {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .contact-form-section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 15px;
+        }
+
+        .contact-form {
+            max-width: 600px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            font-size: 16px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .faq-section {
+            margin-bottom: 3rem;
+        }
+
+        .faq-category {
+            margin-bottom: 2rem;
+        }
+
+        .faq-category h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1rem;
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .faq-question:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .faq-answer {
+            display: none;
+            padding: 1rem 1.5rem;
+        }
+
+        .faq-answer p {
+            margin: 0.5rem 0;
+        }
+
+        .emergency-contact {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(45deg, var(--danger-color), #ff4757);
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .emergency-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-methods {
+                grid-template-columns: 1fr;
+            }
+            
+            .emergency-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</body>
+</html>
