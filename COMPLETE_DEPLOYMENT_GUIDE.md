@@ -244,13 +244,13 @@ vercel --prod
 
 #### 7.1 Add Domain in Vercel
 1. **Project Settings > Domains**
-2. Add your custom domain: `gameblast.com`
+2. Add your custom domain: `gameblast.in`
 3. Follow DNS configuration instructions
 
 #### 7.2 Configure DNS Records
 Add these records with your domain provider:
 
-**For apex domain (gameblast.com):**
+**For apex domain (gameblast.in):**
 ```
 Type: A
 Name: @

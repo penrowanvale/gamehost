@@ -79,12 +79,12 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 JWT_SECRET=generate_32_character_secret
 
 # ADMIN DETAILS (Required)
-ADMIN_EMAIL=admin@gameblast.com
+ADMIN_EMAIL=managervcreation@gmail.com
 ADMIN_PHONE=+919876543210
 ADMIN_PASSWORD=AdminPass123!
 
 # SUPPORT CONTACT (Required)
-SUPPORT_EMAIL=support@gameblast.com
+SUPPORT_EMAIL=support@gameblast.in
 SUPPORT_WHATSAPP=+919876543210
 
 # GOOGLE DRIVE (Optional)

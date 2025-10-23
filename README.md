@@ -276,4 +276,4 @@ This is a private project. For any contributions or modifications, please contac
 
 **GameBlast Mobile** - Revolutionizing mobile gaming experiences with seamless technology and user-centric design.
 
-For support or queries, contact: support@gameblast.com
+For support or queries, contact: support@gameblast.in

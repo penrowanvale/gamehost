@@ -165,9 +165,9 @@ BEGIN
             'game123',
             game_date,
             CASE i 
-                WHEN 1 THEN '19:00:00'
-                WHEN 2 THEN '20:00:00'
-                WHEN 3 THEN '21:00:00'
+                WHEN 1 THEN '19:00:00'::TIME
+                WHEN 2 THEN '20:00:00'::TIME
+                WHEN 3 THEN '21:00:00'::TIME
             END,
             'upcoming',
             'dummy_folder_id_' || org1_id || '_' || i,
@@ -222,9 +222,9 @@ BEGIN
             'number456',
             game_date,
             CASE i 
-                WHEN 1 THEN '18:00:00'
-                WHEN 2 THEN '19:30:00'
-                WHEN 3 THEN '21:30:00'
+                WHEN 1 THEN '18:00:00'::TIME
+                WHEN 2 THEN '19:30:00'::TIME
+                WHEN 3 THEN '21:30:00'::TIME
             END,
             'upcoming',
             'dummy_folder_id_' || org2_id || '_' || i,
@@ -248,7 +248,7 @@ VALUES
     ('platform_name', 'GameBlast Mobile', 'Platform name displayed throughout the site'),
     ('platform_tagline', 'Ultimate Mobile Gaming Experience', 'Platform tagline'),
     ('organiser_monthly_fee', '2500', 'Monthly fee for organisers in INR'),
-    ('support_email', 'support@gameblast.com', 'Support email address'),
+    ('support_email', 'support@gameblast.in', 'Support email address'),
     ('support_whatsapp', '+919876543210', 'Support WhatsApp number'),
     ('support_phone', '+919876543210', 'Support phone number'),
     ('disclaimer_text', 'This platform is a SaaS service. We are not responsible for any monetary losses. Play responsibly.', 'Disclaimer banner text'),
@@ -267,7 +267,7 @@ VALUES
     ('📱 Download our PWA for the best mobile experience!', '/', true, 3),
     ('🎮 New games added daily - Never miss the action!', '/games', true, 4),
     ('💰 Organisers earn more with our platform - Join now!', '/organiser', true, 5)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (display_order) DO NOTHING;
 
 -- ===== CREATE SAMPLE AD SCRIPTS =====
 INSERT INTO ad_scripts (network_name, script_content, is_active, placement_info)
@@ -305,7 +305,15 @@ SELECT setting_key, setting_value FROM admin_settings ORDER BY setting_key;
 SELECT 'News Items Created:' as info, count(*) as count FROM news_banner;
 SELECT text, is_active FROM news_banner ORDER BY display_order;
 
-RAISE NOTICE 'Database setup completed successfully!';
-RAISE NOTICE 'Admin Login: admin@gameblast.com / AdminPass123!';
-RAISE NOTICE 'User Login: player1@example.com / password123';
-RAISE NOTICE 'Organiser Login: organiser1@example.com / organiser123';
+-- Check ad scripts
+SELECT 'Ad Scripts Created:' as info, count(*) as count FROM ad_scripts;
+SELECT network_name, is_active FROM ad_scripts ORDER BY network_name;
+
+-- Final completion messages
+DO $$
+BEGIN
+    RAISE NOTICE 'Database setup completed successfully!';
+    RAISE NOTICE 'Admin Login: admin@gameblast.com / AdminPass123!';
+    RAISE NOTICE 'User Login: player1@example.com / password123';
+    RAISE NOTICE 'Organiser Login: organiser1@example.com / organiser123';
+END $$;

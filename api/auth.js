@@ -159,7 +159,15 @@ router.post('/register-organiser', async (req, res) => {
       return res.status(400).json({ error: organiserError.message });
     }
 
-    // Send notification to admin (you can implement email notification here)
+    // Send notification to admin
+    try {
+      const emailService = require('../config/email');
+      await emailService.sendOrganiserSignupNotification(organiser, user);
+      console.log('Admin notification sent for organiser signup:', user.email);
+    } catch (emailError) {
+      console.error('Failed to send admin notification:', emailError);
+      // Don't fail the registration if email fails
+    }
     
     res.status(201).json({
       message: 'Organiser registration request submitted. Admin will review and approve within 24-48 hours.',

@@ -25,7 +25,7 @@ JWT_SECRET=your_jwt_secret_minimum_32_characters_long
 
 ### **3. Admin Account Details** (Required)
 ```
-ADMIN_EMAIL=admin@gameblast.com
+ADMIN_EMAIL=managervcreation@gmail.com
 ADMIN_PHONE=+919876543210
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=AdminPass123!
@@ -39,7 +39,7 @@ GOOGLE_DRIVE_CLIENT_SECRET=your_google_drive_client_secret
 
 ### **5. Support Contact** (Required)
 ```
-SUPPORT_EMAIL=support@gameblast.com
+SUPPORT_EMAIL=support@gameblast.in
 SUPPORT_WHATSAPP=+919876543210
 SUPPORT_PHONE=+919876543210
 ```

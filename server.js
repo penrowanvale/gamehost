@@ -20,6 +20,7 @@ const gameRoutes = require('./api/games');
 const organiserRoutes = require('./api/organiser');
 const adminRoutes = require('./api/admin');
 const userRoutes = require('./api/users');
+const contactRoutes = require('./api/contact');
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -27,6 +28,7 @@ app.use('/api/games', gameRoutes);
 app.use('/api/organiser', organiserRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Serve HTML files for different routes
 app.get('/', (req, res) => {

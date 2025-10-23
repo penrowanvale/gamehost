@@ -155,7 +155,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.your-actual-servi
 JWT_SECRET=your-generated-32-character-secret-from-step-2
 
 # ===== ADMIN CONFIGURATION =====
-ADMIN_EMAIL=admin@gameblast.com
+ADMIN_EMAIL=managervcreation@gmail.com
 ADMIN_PHONE=+919876543210
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=AdminPass123!
@@ -170,7 +170,7 @@ PLATFORM_TAGLINE=Ultimate Mobile Gaming Experience
 ORGANISER_MONTHLY_FEE=2500
 
 # ===== SUPPORT CONTACT =====
-SUPPORT_EMAIL=support@gameblast.com
+SUPPORT_EMAIL=support@gameblast.in
 SUPPORT_WHATSAPP=+919876543210
 SUPPORT_PHONE=+919876543210
 
@@ -323,12 +323,12 @@ Password: organiser123
 ```bash
 # 1. In Vercel Dashboard → Your Project → Settings
 # 2. Click "Domains" in sidebar
-# 3. Enter your domain: gameblast.com
+# 3. Enter your domain: gameblast.in
 # 4. Click "Add"
 # 5. Follow DNS configuration instructions
 # 6. Add these DNS records in your domain provider:
 
-# For root domain (gameblast.com):
+# For root domain (gameblast.in):
 Type: A
 Name: @
 Value: 76.76.19.61

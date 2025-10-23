@@ -62,7 +62,7 @@
                         <div class="contact-icon">📧</div>
                         <div class="contact-details">
                             <h3>Email Support</h3>
-                            <p><a href="mailto:support@gameblast.com">support@gameblast.com</a></p>
+                            <p><a href="mailto:support@gameblast.in">support@gameblast.in</a></p>
                             <span>Response within 24 hours</span>
                         </div>
                     </div>
@@ -269,7 +269,7 @@
                 <div class="footer-section">
                     <h3>Contact</h3>
                     <ul>
-                        <li><a href="mailto:support@gameblast.com">Support</a></li>
+                        <li><a href="mailto:support@gameblast.in">Support</a></li>
                         <li><a href="/contact">Contact Us</a></li>
                     </ul>
                 </div>
@@ -298,13 +298,24 @@
                 submitBtn.textContent = 'Sending...';
                 submitBtn.disabled = true;
                 
-                // In a real implementation, you'd send this to your API
-                // For now, we'll simulate success
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                // Send to API
+                const response = await fetch('/api/contact/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
                 
-                // Show success message
-                alert('Thank you for your message! We\'ll get back to you within 24 hours.');
-                this.reset();
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Show success message
+                    alert(result.message || 'Thank you for your message! We\'ll get back to you within 24 hours.');
+                    this.reset();
+                } else {
+                    throw new Error(result.error || 'Failed to send message');
+                }
                 
                 // Reset button
                 submitBtn.textContent = originalText;

@@ -19,7 +19,7 @@ CREATE TABLE users (
 -- Organisers table (extended profile for organisers)
 CREATE TABLE organisers (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID UNIQUE REFERENCES users(id) ON DELETE CASCADE,
     real_name VARCHAR(100) NOT NULL,
     organiser_name VARCHAR(100) NOT NULL,
     personal_phone VARCHAR(20) NOT NULL,
@@ -109,7 +109,7 @@ CREATE TABLE news_banner (
     text VARCHAR(500) NOT NULL,
     link_url TEXT,
     is_active BOOLEAN DEFAULT true,
-    display_order INTEGER DEFAULT 0,
+    display_order INTEGER UNIQUE DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -126,9 +126,10 @@ CREATE TABLE admin_settings (
 -- Ad network scripts
 CREATE TABLE ad_scripts (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    network_name VARCHAR(50) NOT NULL, -- 'google_adsense', 'tapjoy', 'meta'
+    network_name VARCHAR(50) UNIQUE NOT NULL, -- 'google_adsense', 'tapjoy', 'meta'
     script_content TEXT NOT NULL,
     is_active BOOLEAN DEFAULT true,
+    placement_info TEXT, -- Description of where ads are placed
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -162,16 +163,16 @@ INSERT INTO admin_settings (setting_key, setting_value, description) VALUES
 ('platform_name', 'GameBlast Mobile', 'Platform name displayed across the site'),
 ('platform_tagline', 'Your Ultimate Mobile Gaming Experience', 'Platform tagline'),
 ('disclaimer_text', 'This platform is a SaaS service. We are not responsible for any monetary losses. Play responsibly.', 'Disclaimer text for banner'),
-('admin_email', 'admin@gameblast.com', 'Admin email for notifications'),
+('admin_email', 'managervcreation@gmail.com', 'Admin email for notifications'),
 ('organiser_monthly_fee', '2500', 'Monthly fee for organisers in INR'),
 ('max_featured_games', '15', 'Maximum number of featured games'),
 ('max_ads', '4', 'Maximum number of sponsored ads');
 
 -- Insert default ad network scripts (empty initially)
-INSERT INTO ad_scripts (network_name, script_content, is_active) VALUES
-('google_adsense', '', false),
-('tapjoy', '', false),
-('meta', '', false);
+INSERT INTO ad_scripts (network_name, script_content, is_active, placement_info) VALUES
+('google_adsense', '', false, 'Header, sidebar, and footer ad placements'),
+('tapjoy', '', false, 'Mobile interstitial and banner ads'),
+('meta', '', false, 'Facebook audience network integration');
 
 -- RLS (Row Level Security) Policies
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
