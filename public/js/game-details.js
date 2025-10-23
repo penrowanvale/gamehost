@@ -118,8 +118,15 @@ class GameDetailsManager {
     // Organiser info
     console.log('Game organiser data:', this.game.organisers);
     const organiserNameEl = document.getElementById('organiserName');
+    const organiserSectionEl = document.getElementById('organiserSection');
+    
     if (this.game.organisers && organiserNameEl) {
       organiserNameEl.textContent = this.game.organisers.organiser_name || 'Unknown Organiser';
+      
+      // Show organiser section
+      if (organiserSectionEl) {
+        organiserSectionEl.style.display = 'block';
+      }
       
       // Contact organiser button
       const contactBtn = document.getElementById('contactOrganiserBtn');
@@ -138,6 +145,10 @@ class GameDetailsManager {
       console.warn('No organiser data found for game:', this.game.id);
       if (organiserNameEl) {
         organiserNameEl.textContent = 'Organiser information not available';
+      }
+      // Hide organiser section if no data
+      if (organiserSectionEl) {
+        organiserSectionEl.style.display = 'none';
       }
     }
 

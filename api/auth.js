@@ -191,6 +191,8 @@ router.post('/login', async (req, res) => {
   try {
     const { identifier, password } = req.body; // identifier can be email or phone
 
+    console.log('Login attempt for:', identifier);
+
     if (!identifier || !password) {
       return res.status(400).json({ error: 'Email/phone and password are required' });
     }
@@ -202,18 +204,25 @@ router.post('/login', async (req, res) => {
       .or(`email.eq.${identifier},phone.eq.${identifier}`)
       .single();
 
+    console.log('User lookup result:', { found: !!user, error: error?.message });
+
     if (error || !user) {
+      console.log('User not found for identifier:', identifier);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     // Check if user is active
     if (!user.is_active) {
+      console.log('User account is deactivated:', user.email);
       return res.status(401).json({ error: 'Account is deactivated' });
     }
 
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+    console.log('Password validation:', isPasswordValid);
+    
     if (!isPasswordValid) {
+      console.log('Invalid password for user:', user.email);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
@@ -227,6 +236,7 @@ router.post('/login', async (req, res) => {
         .single();
       
       organiserData = organiser;
+      console.log('Organiser data:', { found: !!organiser, approved: organiser?.is_approved });
       
       if (!organiser || !organiser.is_approved) {
         return res.status(401).json({ 
@@ -242,6 +252,8 @@ router.post('/login', async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
+
+    console.log('Login successful for:', user.email, 'Role:', user.role);
 
     res.json({
       message: 'Login successful',

@@ -83,6 +83,8 @@ router.get('/today', async (req, res) => {
 // Get all public games (no auth required)
 router.get('/public', async (req, res) => {
   try {
+    console.log('Fetching public games...');
+    
     const { data: games, error } = await supabase
       .from('games')
       .select(`
@@ -98,7 +100,10 @@ router.get('/public', async (req, res) => {
       .order('game_time', { ascending: true })
       .limit(50);
 
+    console.log('Public games query result:', { games: games?.length || 0, error });
+
     if (error) {
+      console.error('Public games query error:', error);
       return res.status(400).json({ error: error.message });
     }
 
