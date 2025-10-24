@@ -25,7 +25,7 @@ const authenticateToken = (req, res, next) => {
 router.get('/today', async (req, res) => {
   try {
     const today = new Date().toISOString().split('T')[0];
-    console.log('Fetching games for date:', today);
+    console.log('📅 Fetching games for date:', today);
     
     const { data: games, error } = await supabase
       .from('games')
@@ -41,7 +41,7 @@ router.get('/today', async (req, res) => {
       .in('status', ['upcoming', 'live'])
       .order('game_time', { ascending: true });
 
-    console.log('Games query result:', { games: games?.length || 0, error });
+    console.log('📊 Games query result:', { games: games?.length || 0, error });
 
     if (error) {
       return res.status(400).json({ error: error.message });
@@ -49,7 +49,7 @@ router.get('/today', async (req, res) => {
 
     // If no games for today, get upcoming games from future dates
     if (!games || games.length === 0) {
-      console.log('No games for today, fetching upcoming games');
+      console.log('🔄 No games for today, fetching upcoming games');
       const { data: upcomingGames, error: upcomingError } = await supabase
         .from('games')
         .select(`
@@ -83,7 +83,7 @@ router.get('/today', async (req, res) => {
 // Get all public games (no auth required)
 router.get('/public', async (req, res) => {
   try {
-    console.log('Fetching public games...');
+    console.log('🌍 Fetching public games...');
     
     const { data: games, error } = await supabase
       .from('games')
@@ -100,16 +100,16 @@ router.get('/public', async (req, res) => {
       .order('game_time', { ascending: true })
       .limit(50);
 
-    console.log('Public games query result:', { games: games?.length || 0, error });
+    console.log('📊 Public games query result:', { games: games?.length || 0, error });
 
     if (error) {
-      console.error('Public games query error:', error);
+      console.error('💥 Public games query error:', error);
       return res.status(400).json({ error: error.message });
     }
 
     res.json({ games: games || [] });
   } catch (error) {
-    console.error('Error fetching public games:', error);
+    console.error('💥 Error fetching public games:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

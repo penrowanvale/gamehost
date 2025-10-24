@@ -4,7 +4,7 @@ require('dotenv').config();
 
 async function createAdminUser() {
   try {
-    console.log('Checking for admin user...');
+    console.log('🔍 Checking for admin user...');
     
     const adminEmail = process.env.ADMIN_EMAIL;
     const adminPhone = process.env.ADMIN_PHONE;
@@ -12,7 +12,7 @@ async function createAdminUser() {
     const adminPassword = process.env.ADMIN_PASSWORD;
     
     if (!adminEmail || !adminPhone || !adminUsername || !adminPassword) {
-      console.error('Admin credentials not found in environment variables');
+      console.error('❌ Admin credentials not found in environment variables');
       return;
     }
     
@@ -24,7 +24,7 @@ async function createAdminUser() {
       .single();
     
     if (existingAdmin) {
-      console.log('Admin user already exists:', existingAdmin.email);
+      console.log('✅ Admin user already exists:', existingAdmin.email);
       
       // Update password if needed
       const passwordHash = await bcrypt.hash(adminPassword, 10);
@@ -36,12 +36,12 @@ async function createAdminUser() {
         })
         .eq('id', existingAdmin.id);
       
-      console.log('Admin password updated');
+      console.log('🔑 Admin password updated');
       return;
     }
     
     // Create admin user
-    console.log('Creating admin user...');
+    console.log('👤 Creating admin user...');
     const passwordHash = await bcrypt.hash(adminPassword, 10);
     
     const { data: admin, error } = await supabaseAdmin
@@ -58,11 +58,11 @@ async function createAdminUser() {
       .single();
     
     if (error) {
-      console.error('Error creating admin user:', error);
+      console.error('💥 Error creating admin user:', error);
       return;
     }
     
-    console.log('Admin user created successfully:', admin.email);
+    console.log('✅ Admin user created successfully:', admin.email);
     
     // Create default admin settings
     const defaultSettings = [
@@ -78,20 +78,20 @@ async function createAdminUser() {
         .upsert(setting);
     }
     
-    console.log('Default admin settings created');
+    console.log('⚙️ Default admin settings created');
     
   } catch (error) {
-    console.error('Error in createAdminUser:', error);
+    console.error('💥 Error in createAdminUser:', error);
   }
 }
 
 // Run if called directly
 if (require.main === module) {
   createAdminUser().then(() => {
-    console.log('Admin setup complete');
+    console.log('🎉 Admin setup complete');
     process.exit(0);
   }).catch(error => {
-    console.error('Admin setup failed:', error);
+    console.error('💥 Admin setup failed:', error);
     process.exit(1);
   });
 }

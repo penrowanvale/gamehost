@@ -44,29 +44,30 @@ class GamesManager {
     });
   }
 
+  // FIXED: Better games loading logic
   async loadGames() {
     try {
       this.showLoading(true);
       
-      console.log('Loading games...');
+      console.log('🎮 Loading games...');
       // Always load public games to show all available games
       const response = await app.apiCall('/games/public');
-      console.log('Public games API response:', response);
+      console.log('📊 Public games API response:', response);
       
       this.games = response.games || [];
       this.filteredGames = [...this.games];
       
-      console.log('Loaded games:', this.games.length);
+      console.log('✅ Loaded games:', this.games.length);
       
       if (this.games.length === 0) {
-        console.log('No games found, checking today games as fallback...');
+        console.log('🔄 No games found, checking today games as fallback...');
         try {
           const todayResponse = await app.apiCall('/games/today');
-          console.log('Today games fallback response:', todayResponse);
+          console.log('📅 Today games fallback response:', todayResponse);
           this.games = todayResponse.games || [];
           this.filteredGames = [...this.games];
         } catch (todayError) {
-          console.log('Today games also failed:', todayError);
+          console.log('❌ Today games also failed:', todayError);
         }
       }
       
@@ -74,7 +75,7 @@ class GamesManager {
       this.showLoading(false);
       
     } catch (error) {
-      console.error('Error loading games:', error);
+      console.error('💥 Error loading games:', error);
       app.showNotification('Failed to load games. Please try again later.', 'error');
       this.showNoGames();
       this.showLoading(false);
@@ -144,7 +145,7 @@ class GamesManager {
         <div class="game-banner">
           <img src="${game.banner_image_url || '/images/default-game.svg'}" 
                alt="${game.name}" loading="lazy" 
-               onerror="this.onerror=null; this.src='/images/default-game.svg';">
+               onerror="this.onerror=null; this.src='/images/default-game.svg'; console.log('🖼️ Image fallback for: ${game.name}');">
           <div class="game-status ${statusClass}">${statusText}</div>
         </div>
         
@@ -203,7 +204,8 @@ class GamesManager {
       const modalContent = document.getElementById('gameModalContent');
       modalContent.innerHTML = `
           <img src="${game.banner_image_url || '/images/default-game.svg'}"
-             alt="${game.name}" class="modal-game-banner">
+             alt="${game.name}" class="modal-game-banner"
+             onerror="this.onerror=null; this.src='/images/default-game.svg';">
         
         <h2 class="modal-game-title">${game.name}</h2>
         
