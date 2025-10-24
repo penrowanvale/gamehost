@@ -196,6 +196,42 @@
   box-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
 }
 
+/* Modal Scrolling Fix */
+.modal {
+  overflow-y: auto;
+}
+
+.modal-content {
+  max-height: 90vh;
+  overflow-y: auto;
+  margin: 2% auto;
+}
+
+/* Organiser signup form specific fixes */
+#organiserSignupForm {
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+#organiserSignupForm::-webkit-scrollbar {
+  width: 8px;
+}
+
+#organiserSignupForm::-webkit-scrollbar-track {
+  background: var(--darker-bg);
+  border-radius: 4px;
+}
+
+#organiserSignupForm::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+#organiserSignupForm::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .auth-container {
@@ -213,9 +249,14 @@
   }
   
   .modal-content {
-    margin: 2% auto;
-    padding: 20px;
-    width: 95%;
+    margin: 1% auto;
+    padding: 15px;
+    width: 98%;
+    max-height: 95vh;
+  }
+  
+  #organiserSignupForm {
+    max-height: 85vh;
   }
   
   .verification-notice {

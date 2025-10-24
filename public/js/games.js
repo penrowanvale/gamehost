@@ -44,33 +44,39 @@ class GamesManager {
     });
   }
 
+  // FIXED: Better games loading logic
   async loadGames() {
     try {
       this.showLoading(true);
       
-      console.log('Loading games for today...');
-      // Try to get today's games first, then fall back to public games
-      let response;
-      try {
-        response = await app.apiCall('/games/today');
-        console.log('Today games API response:', response);
-      } catch (error) {
-        console.log('Today games failed, falling back to public games');
-        response = await app.apiCall('/games/public');
-        console.log('Public games API response:', response);
-      }
+      console.log('🎮 Loading games...');
+      // Always load public games to show all available games
+      const response = await app.apiCall('/games/public');
+      console.log('📊 Public games API response:', response);
       
       this.games = response.games || [];
       this.filteredGames = [...this.games];
       
-      console.log('Loaded games:', this.games.length);
+      console.log('✅ Loaded games:', this.games.length);
+      
+      if (this.games.length === 0) {
+        console.log('🔄 No games found, checking today games as fallback...');
+        try {
+          const todayResponse = await app.apiCall('/games/today');
+          console.log('📅 Today games fallback response:', todayResponse);
+          this.games = todayResponse.games || [];
+          this.filteredGames = [...this.games];
+        } catch (todayError) {
+          console.log('❌ Today games also failed:', todayError);
+        }
+      }
       
       this.renderGames();
       this.showLoading(false);
       
     } catch (error) {
-      console.error('Error loading games:', error);
-      app.showNotification('Failed to load games. Please check if you have games for today.', 'error');
+      console.error('💥 Error loading games:', error);
+      app.showNotification('Failed to load games. Please try again later.', 'error');
       this.showNoGames();
       this.showLoading(false);
     }
@@ -139,7 +145,7 @@ class GamesManager {
         <div class="game-banner">
           <img src="${game.banner_image_url || '/images/default-game.svg'}" 
                alt="${game.name}" loading="lazy" 
-               onerror="app.handleImageError(this)">
+               onerror="this.onerror=null; this.src='/images/default-game.svg'; console.log('🖼️ Image fallback for: ${game.name}');">
           <div class="game-status ${statusClass}">${statusText}</div>
         </div>
         
@@ -198,7 +204,8 @@ class GamesManager {
       const modalContent = document.getElementById('gameModalContent');
       modalContent.innerHTML = `
           <img src="${game.banner_image_url || '/images/default-game.svg'}"
-             alt="${game.name}" class="modal-game-banner">
+             alt="${game.name}" class="modal-game-banner"
+             onerror="this.onerror=null; this.src='/images/default-game.svg';">
         
         <h2 class="modal-game-title">${game.name}</h2>
         

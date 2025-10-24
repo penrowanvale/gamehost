@@ -3,6 +3,9 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
+// Initialize admin user on startup
+const { createAdminUser } = require('./scripts/create-admin');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -96,8 +99,16 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
+  
+  // Create admin user if it doesn't exist
+  try {
+    await createAdminUser();
+    console.log('Admin user setup completed');
+  } catch (error) {
+    console.error('Admin user setup failed:', error);
+  }
 });
 
 module.exports = app;
