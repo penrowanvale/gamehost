@@ -57,11 +57,20 @@ class AdminManager {
         e.preventDefault();
         const section = e.currentTarget.dataset.section;
         this.switchSection(section);
+        // Close sidebar on mobile after navigating
+        if (window.innerWidth <= 1024) {
+          document.getElementById('adminSidebar')?.classList.remove('open');
+        }
       });
     });
 
     // Sidebar toggle
     document.getElementById('adminSidebarToggle')?.addEventListener('click', () => {
+      document.getElementById('adminSidebar').classList.toggle('open');
+    });
+
+    // Global panel menu toggle in header (mobile)
+    document.getElementById('panelMenuToggle')?.addEventListener('click', () => {
       document.getElementById('adminSidebar').classList.toggle('open');
     });
 
