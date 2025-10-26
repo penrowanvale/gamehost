@@ -74,6 +74,11 @@ class OrganiserManager {
       document.getElementById('sidebar').classList.toggle('open');
     });
 
+    // Header button to open/close sidebar on mobile
+    document.getElementById('organiserSidebarOpen')?.addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
     // Profile form
     document.getElementById('profileForm')?.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -319,7 +324,6 @@ class OrganiserManager {
       
       // Extract Google Drive folder ID from URL
       const sheetsFolder = formData.get('sheetsFolder');
-      const googleDrive = require('../config/google-drive');
       let sheetsFolderId = null;
       
       if (sheetsFolder) {
