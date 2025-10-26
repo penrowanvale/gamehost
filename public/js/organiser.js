@@ -66,11 +66,20 @@ class OrganiserManager {
         e.preventDefault();
         const section = e.currentTarget.dataset.section;
         this.switchSection(section);
+        // Close sidebar on mobile after navigating
+        if (window.innerWidth <= 1024) {
+          document.getElementById('sidebar')?.classList.remove('open');
+        }
       });
     });
 
     // Sidebar toggle for mobile
     document.getElementById('sidebarToggle')?.addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    // Global panel menu toggle in header (mobile)
+    document.getElementById('panelMenuToggle')?.addEventListener('click', () => {
       document.getElementById('sidebar').classList.toggle('open');
     });
 
@@ -315,17 +324,20 @@ class OrganiserManager {
 
   async createGame() {
     try {
-      const formData = new FormData(document.getElementById('createGameForm'));
+      const formEl = document.getElementById('createGameForm');
+
+      // Use native browser validation to highlight invalid fields
+      if (formEl && !formEl.checkValidity()) {
+        formEl.reportValidity();
+        return;
+      }
+
+      const formData = new FormData(formEl);
       
       // Extract Google Drive folder ID from URL
       const sheetsFolder = formData.get('sheetsFolder');
-      const googleDrive = require('../config/google-drive');
-      let sheetsFolderId = null;
-      
-      if (sheetsFolder) {
-        // This will be handled on the server side
-        sheetsFolderId = sheetsFolder;
-      }
+      // Folder validation and ID extraction are handled on the server
+      const sheetsFolderId = sheetsFolder || null;
 
       const data = {
         name: formData.get('gameName'),

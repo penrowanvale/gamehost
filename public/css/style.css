@@ -194,6 +194,16 @@ body {
   cursor: pointer;
 }
 
+/* Panel (sidebar) toggle for admin/organiser panels */
+.panel-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: 24px;
+  cursor: pointer;
+}
+
 /* News Banner */
 .news-banner {
   background: var(--card-bg);
@@ -478,6 +488,10 @@ body {
   }
 
   .mobile-menu-toggle {
+    display: block;
+  }
+
+  .panel-menu-toggle {
     display: block;
   }
 
