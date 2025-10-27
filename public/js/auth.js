@@ -165,7 +165,7 @@ class AuthManager {
       const success = await app.register(userData, userType === 'organiser');
       
       if (success) {
-        this.closeSignupModal();
+        closeSignupModal();
       }
 
     } catch (error) {

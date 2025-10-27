@@ -887,3 +887,143 @@
     flex-direction: column;
   }
 }
+
+/* Pending Verifications Styles */
+.pending-verifications-list {
+  width: 100%;
+}
+
+.pending-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(255, 107, 53, 0.2);
+  margin-bottom: 15px;
+}
+
+.pending-count {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--warning-color);
+}
+
+.pending-label {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.pending-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pending-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 107, 53, 0.05);
+  border: 1px solid rgba(255, 107, 53, 0.1);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.pending-item:hover {
+  background: rgba(255, 107, 53, 0.08);
+  border-color: rgba(255, 107, 53, 0.2);
+}
+
+.pending-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.participant-name {
+  font-weight: 600;
+  color: var(--text-light);
+  font-size: 0.95rem;
+}
+
+.game-name {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.payment-details {
+  display: flex;
+  gap: 15px;
+  margin-top: 4px;
+}
+
+.payment-details .amount {
+  color: var(--success-color);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.payment-details .sheets {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.screenshot-link {
+  margin-top: 6px;
+}
+
+.btn-view-screenshot {
+  background: rgba(255, 107, 53, 0.1);
+  color: var(--primary-color);
+  border: 1px solid rgba(255, 107, 53, 0.3);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-view-screenshot:hover {
+  background: rgba(255, 107, 53, 0.2);
+  border-color: var(--primary-color);
+}
+
+.pending-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pending-actions .btn {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  min-width: 70px;
+}
+
+.view-all-pending {
+  text-align: center;
+  padding: 15px 0;
+  border-top: 1px solid rgba(255, 107, 53, 0.1);
+  margin-top: 10px;
+}
+
+/* Mobile responsiveness for pending verifications */
+@media (max-width: 768px) {
+  .pending-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .pending-actions {
+    justify-content: center;
+  }
+  
+  .payment-details {
+    justify-content: space-between;
+  }
+}

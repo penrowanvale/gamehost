@@ -683,13 +683,14 @@ router.get('/analytics', authenticateAdmin, async (req, res) => {
 router.get('/export/:type', authenticateAdmin, async (req, res) => {
   try {
     const { type } = req.params;
-    let data, error;
+    let data, error, filename, csvData;
 
     switch (type) {
       case 'users':
         ({ data, error } = await supabaseAdmin
           .from('users')
-          .select('*'));
+          .select('id, username, email, phone, role, is_active, created_at'));
+        filename = 'users_export.csv';
         break;
       case 'organisers':
         ({ data, error } = await supabaseAdmin
@@ -698,6 +699,7 @@ router.get('/export/:type', authenticateAdmin, async (req, res) => {
             *,
             users (username, email, phone)
           `));
+        filename = 'organisers_export.csv';
         break;
       case 'games':
         ({ data, error } = await supabaseAdmin
@@ -706,6 +708,7 @@ router.get('/export/:type', authenticateAdmin, async (req, res) => {
             *,
             organisers (organiser_name, real_name)
           `));
+        filename = 'games_export.csv';
         break;
       case 'participants':
         ({ data, error } = await supabaseAdmin
@@ -715,6 +718,20 @@ router.get('/export/:type', authenticateAdmin, async (req, res) => {
             users (username, email),
             games (name, game_date)
           `));
+        filename = 'participants_export.csv';
+        break;
+      case 'financial':
+        // Generate financial report
+        ({ data, error } = await supabaseAdmin
+          .from('games')
+          .select(`
+            id, name, game_date, total_prize, registered_participants,
+            price_per_sheet_1, price_per_sheet_2, price_per_sheet_3_plus,
+            status,
+            organisers (organiser_name, real_name)
+          `)
+          .eq('status', 'ended'));
+        filename = 'financial_report.csv';
         break;
       default:
         return res.status(400).json({ error: 'Invalid export type' });
@@ -724,11 +741,125 @@ router.get('/export/:type', authenticateAdmin, async (req, res) => {
       return res.status(400).json({ error: error.message });
     }
 
-    res.json({ data });
+    if (!data || data.length === 0) {
+      return res.status(404).json({ error: 'No data found to export' });
+    }
+
+    // Convert data to CSV
+    csvData = convertToCSV(data, type);
+
+    // Set headers for file download
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Cache-Control', 'no-cache');
+    
+    res.send(csvData);
+
   } catch (error) {
     console.error('Error exporting data:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// Helper function to convert data to CSV
+function convertToCSV(data, type) {
+  if (!data || data.length === 0) return '';
+
+  let headers = [];
+  let rows = [];
+
+  switch (type) {
+    case 'users':
+      headers = ['ID', 'Username', 'Email', 'Phone', 'Role', 'Active', 'Created At'];
+      rows = data.map(user => [
+        user.id,
+        user.username,
+        user.email,
+        user.phone,
+        user.role,
+        user.is_active ? 'Yes' : 'No',
+        new Date(user.created_at).toLocaleDateString()
+      ]);
+      break;
+
+    case 'organisers':
+      headers = ['ID', 'Real Name', 'Organiser Name', 'Username', 'Email', 'Phone', 'Personal Phone', 'Approved', 'Fee Paid', 'Created At'];
+      rows = data.map(org => [
+        org.id,
+        org.real_name,
+        org.organiser_name,
+        org.users?.username || '',
+        org.users?.email || '',
+        org.users?.phone || '',
+        org.personal_phone,
+        org.is_approved ? 'Yes' : 'No',
+        org.monthly_fee_paid ? 'Yes' : 'No',
+        new Date(org.created_at).toLocaleDateString()
+      ]);
+      break;
+
+    case 'games':
+      headers = ['ID', 'Name', 'Organiser', 'Date', 'Time', 'Status', 'Total Prize', 'Participants', 'Sheet Price 1', 'Sheet Price 2', 'Sheet Price 3+'];
+      rows = data.map(game => [
+        game.id,
+        game.name,
+        game.organisers?.organiser_name || '',
+        game.game_date,
+        game.game_time,
+        game.status,
+        `₹${game.total_prize}`,
+        game.registered_participants || 0,
+        `₹${game.price_per_sheet_1}`,
+        `₹${game.price_per_sheet_2}`,
+        `₹${game.price_per_sheet_3_plus}`
+      ]);
+      break;
+
+    case 'participants':
+      headers = ['ID', 'Username', 'Email', 'Game', 'Game Date', 'Amount Paid', 'Sheets', 'Payment Status', 'Registered At'];
+      rows = data.map(participant => [
+        participant.id,
+        participant.users?.username || '',
+        participant.users?.email || '',
+        participant.games?.name || '',
+        participant.games?.game_date || '',
+        `₹${participant.amount_paid}`,
+        participant.selected_sheet_numbers?.length || 0,
+        participant.payment_status,
+        new Date(participant.created_at).toLocaleDateString()
+      ]);
+      break;
+
+    case 'financial':
+      headers = ['Game ID', 'Game Name', 'Organiser', 'Date', 'Status', 'Total Prize', 'Participants', 'Revenue', 'Profit/Loss'];
+      rows = data.map(game => {
+        const revenue = (game.registered_participants || 0) * (game.price_per_sheet_1 || 0);
+        const profit = revenue - (game.total_prize || 0);
+        return [
+          game.id,
+          game.name,
+          game.organisers?.organiser_name || '',
+          game.game_date,
+          game.status,
+          `₹${game.total_prize}`,
+          game.registered_participants || 0,
+          `₹${revenue}`,
+          `₹${profit}`
+        ];
+      });
+      break;
+
+    default:
+      return '';
+  }
+
+  // Create CSV content
+  const csvContent = [
+    headers.join(','),
+    ...rows.map(row => row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(','))
+  ].join('\n');
+
+  return csvContent;
+}
 
 module.exports = router;

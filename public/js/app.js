@@ -10,11 +10,18 @@ class GamePlatform {
 
   // Helper method to get valid image URL
   getValidImageUrl(imageUrl) {
-    if (!imageUrl) return '/images/default-game.svg';
+    if (!imageUrl) {
+      console.log('🖼️ No image URL provided, using default');
+      return '/images/default-game.svg';
+    }
+    
+    console.log('🖼️ Processing image URL:', imageUrl);
     
     // If it's a local path, try SVG version first
     if (imageUrl.startsWith('/images/') && imageUrl.endsWith('.jpg')) {
-      return imageUrl.replace('.jpg', '.svg');
+      const svgUrl = imageUrl.replace('.jpg', '.svg');
+      console.log('🖼️ Converting local JPG to SVG:', svgUrl);
+      return svgUrl;
     }
     
     // For external URLs, validate and fix them
@@ -25,34 +32,39 @@ class GamePlatform {
         const match = imageUrl.match(/ibb\.co\/([a-zA-Z0-9]+)/);
         if (match) {
           // Convert to direct image URL
-          return `https://i.ibb.co/${match[1]}.jpg`;
+          const directUrl = `https://i.ibb.co/${match[1]}.jpg`;
+          console.log('🖼️ Converting ibb.co URL:', directUrl);
+          return directUrl;
         }
         console.warn('Invalid ibb.co URL:', imageUrl);
         return '/images/default-game.svg';
       }
       
-      // Fix Google Drive URLs
-      if (imageUrl.includes('drive.google.com/file/')) {
+      // Fix Google Drive URLs - handle multiple formats
+      if (imageUrl.includes('drive.google.com')) {
         const fileId = imageUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
         if (fileId) {
-          return `https://drive.google.com/uc?export=view&id=${fileId[1]}`;
+          // Try the uc format first (most reliable for images)
+          const ucUrl = `https://drive.google.com/uc?export=view&id=${fileId[1]}`;
+          console.log('🖼️ Converting Google Drive URL:', ucUrl);
+          return ucUrl;
         }
-        console.warn('Invalid Google Drive URL:', imageUrl);
-        return '/images/default-game.svg';
-      }
-      
-      // Fix Google Drive sharing URLs (view?usp=sharing)
-      if (imageUrl.includes('drive.google.com') && imageUrl.includes('view?usp=sharing')) {
-        const fileId = imageUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
-        if (fileId) {
-          return `https://drive.google.com/uc?export=view&id=${fileId[1]}`;
+        
+        // Handle direct file ID format
+        const directIdMatch = imageUrl.match(/id=([a-zA-Z0-9-_]+)/);
+        if (directIdMatch) {
+          const ucUrl = `https://drive.google.com/uc?export=view&id=${directIdMatch[1]}`;
+          console.log('🖼️ Converting Google Drive ID URL:', ucUrl);
+          return ucUrl;
         }
-        console.warn('Invalid Google Drive sharing URL:', imageUrl);
+        
+        console.warn('Could not extract file ID from Google Drive URL:', imageUrl);
         return '/images/default-game.svg';
       }
       
       // For other external URLs, validate they look like image URLs
       if (imageUrl.match(/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i)) {
+        console.log('🖼️ Valid external image URL:', imageUrl);
         return imageUrl; // Valid image URL
       }
       
@@ -60,6 +72,7 @@ class GamePlatform {
       return '/images/default-game.svg';
     }
     
+    console.log('🖼️ Using image URL as-is:', imageUrl);
     return imageUrl;
   }
 
@@ -83,9 +96,29 @@ class GamePlatform {
   }
 
   // FIXED: Enhanced image error handling
-  handleImageError(img) {
-    console.log('🖼️ Image error for:', img.src);
+  handleImageError(img, gameName = '', originalUrl = '') {
+    console.log(`🖼️ Image error for game: ${gameName}`);
+    console.log(`🖼️ Failed URL: ${img.src}`);
+    console.log(`🖼️ Original URL: ${originalUrl}`);
+    
     img.onerror = null; // Prevent infinite loop
+    
+    // Try fallback strategies before using default
+    if (originalUrl && originalUrl.startsWith('http')) {
+      // If it's a Google Drive URL, try different formats
+      if (originalUrl.includes('drive.google.com')) {
+        const fileId = originalUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+        if (fileId) {
+          // Try thumbnail format as fallback
+          const thumbnailUrl = `https://drive.google.com/thumbnail?id=${fileId[1]}&sz=w400-h600`;
+          console.log(`🖼️ Trying thumbnail fallback: ${thumbnailUrl}`);
+          img.src = thumbnailUrl;
+          return;
+        }
+      }
+    }
+    
+    // Final fallback to default
     img.src = '/images/default-game.svg';
     img.alt = 'Game Image';
   }
@@ -355,21 +388,26 @@ class GamePlatform {
     if (!container || !games || games.length === 0) return;
 
     const gameGrid = container.querySelector('.game-grid');
-    gameGrid.innerHTML = games.map(game => `
-      <div class="game-card ${game.has_glow_dot ? 'glow-dot' : ''} ${game.has_glow_shadow ? 'glow-shadow' : ''}">
-        <img src="${this.getValidImageUrl(game.banner_image_url)}" 
-             alt="${game.name}" loading="lazy"
-             onerror="this.onerror=null; this.src='/images/default-game.svg'; console.log('🖼️ Image fallback for: ${game.name}');">
-        <div class="game-info">
-          <h3 class="game-title">${game.name}</h3>
-          <div class="game-details">
-            <span class="participants">${game.registered_participants || 0} players</span>
-            <span class="game-prize">₹${game.total_prize}</span>
+    gameGrid.innerHTML = games.map(game => {
+      const imageUrl = this.getValidImageUrl(game.banner_image_url);
+      console.log(`🖼️ Game: ${game.name}, Original URL: ${game.banner_image_url}, Processed URL: ${imageUrl}`);
+      
+      return `
+        <div class="game-card ${game.has_glow_dot ? 'glow-dot' : ''} ${game.has_glow_shadow ? 'glow-shadow' : ''}">
+          <img src="${imageUrl}" 
+               alt="${game.name}" loading="lazy"
+               onerror="app.handleImageError(this, '${game.name}', '${game.banner_image_url}');">
+          <div class="game-info">
+            <h3 class="game-title">${game.name}</h3>
+            <div class="game-details">
+              <span class="participants">${game.registered_participants || 0} players</span>
+              <span class="game-prize">₹${game.total_prize}</span>
+            </div>
+            <a href="/game/${game.id}" class="btn btn-primary">View Game</a>
           </div>
-          <a href="/game/${game.id}" class="btn btn-primary">View Game</a>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     this.initializeCarousel(container);
   }

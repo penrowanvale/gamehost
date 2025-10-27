@@ -85,6 +85,27 @@ router.get('/public', async (req, res) => {
   try {
     console.log('🌍 Fetching public games...');
     
+    // First, get all games regardless of status for debugging
+    const { data: allGames, error: allError } = await supabaseAdmin
+      .from('games')
+      .select(`
+        *,
+        organisers (
+          organiser_name,
+          whatsapp_number,
+          real_name
+        )
+      `)
+      .order('game_date', { ascending: true })
+      .order('game_time', { ascending: true });
+
+    console.log('📊 All games in database:', { total: allGames?.length || 0, error: allError });
+    
+    if (allGames && allGames.length > 0) {
+      console.log('📋 Game statuses:', allGames.map(g => ({ name: g.name, status: g.status, date: g.game_date, organiser: g.organisers?.organiser_name })));
+    }
+
+    // Now get the filtered games
     const { data: games, error } = await supabaseAdmin
       .from('games')
       .select(`
@@ -100,11 +121,17 @@ router.get('/public', async (req, res) => {
       .order('game_time', { ascending: true })
       .limit(50);
 
-    console.log('📊 Public games query result:', { games: games?.length || 0, error });
+    console.log('📊 Filtered public games query result:', { games: games?.length || 0, error });
 
     if (error) {
       console.error('💥 Public games query error:', error);
       return res.status(400).json({ error: error.message });
+    }
+
+    // If no upcoming/live games, return all games for now (debugging)
+    if (!games || games.length === 0) {
+      console.log('⚠️ No upcoming/live games found, returning all games for debugging');
+      return res.json({ games: allGames || [] });
     }
 
     res.json({ games: games || [] });
@@ -471,33 +498,81 @@ router.get('/sheets/secure-download/:participationId/:sheetNumber', authenticate
     // Log the download attempt
     console.log(`Download attempt: User ${userId}, Game ${game.name}, Sheet ${sheetNumber}`);
 
-    // For public Google Drive folders, we need to construct the download URL
-    // Since we can't easily get individual file IDs without API access,
-    // we'll provide a direct folder access method that's still secure
-    
     const folderId = game.sheets_folder_id;
     
-    // Method 1: Direct Google Drive download (if files are properly named and public)
-    const directDownloadUrl = `https://drive.google.com/uc?export=download&id=${folderId}&filename=${fileName}`;
-    
-    // Method 2: Folder view with specific file (more reliable for public folders)
-    const folderViewUrl = `https://drive.google.com/drive/folders/${folderId}`;
-    
-    // Return both options to the client
-    res.json({
-      success: true,
-      fileName: fileName,
-      sheetNumber: sheetNumber,
-      gameName: game.name,
-      downloadOptions: {
-        direct: directDownloadUrl,
-        folder: folderViewUrl,
-        instructions: `Look for file: ${fileName}`
-      },
-      message: `Sheet ${sheetNumber} ready for download`,
-      instructions: `Your sheet "${fileName}" is ready. If direct download doesn't work, use the folder link to find and download your specific sheet.`
-    });
+    if (!folderId) {
+      return res.status(404).json({ error: 'Sheets folder not configured for this game' });
+    }
 
+    try {
+      // Try to find and stream the actual file from Google Drive
+      const googleDrive = require('../config/google-drive');
+      
+      // First, try to get the file list from the folder
+      const files = await googleDrive.getSheetsList(folderId);
+      
+      // Look for the specific sheet file
+      const possibleNames = [
+        `${sheetNumber}.pdf`,
+        `Sheet_${sheetNumber}.pdf`,
+        `sheet_${sheetNumber}.pdf`,
+        `${String(sheetNumber).padStart(3, '0')}.pdf`,
+        `Sheet_${String(sheetNumber).padStart(3, '0')}.pdf`,
+        fileName
+      ];
+      
+      let targetFile = null;
+      for (const name of possibleNames) {
+        targetFile = files.find(file => file.name.toLowerCase() === name.toLowerCase());
+        if (targetFile) break;
+      }
+      
+      if (targetFile) {
+        // Stream the file directly from Google Drive
+        const { google } = require('googleapis');
+        const auth = new google.auth.GoogleAuth({
+          credentials: {
+            client_id: process.env.GOOGLE_DRIVE_CLIENT_ID,
+            client_secret: process.env.GOOGLE_DRIVE_CLIENT_SECRET,
+          },
+          scopes: ['https://www.googleapis.com/auth/drive.readonly']
+        });
+        
+        const drive = google.drive({ version: 'v3', auth });
+        
+        // Get the file stream
+        const fileResponse = await drive.files.get({
+          fileId: targetFile.id,
+          alt: 'media'
+        }, { responseType: 'stream' });
+        
+        // Set appropriate headers for file download
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        res.setHeader('Cache-Control', 'no-cache');
+        
+        // Pipe the file stream to response
+        fileResponse.data.pipe(res);
+        
+        // Mark this sheet as accessed (for tracking)
+        await supabaseAdmin
+          .from('game_participants')
+          .update({ 
+            sheets_downloaded: true,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', participationId);
+          
+        return;
+      }
+    } catch (driveError) {
+      console.error('Google Drive API error:', driveError);
+      // Fall back to redirect method
+    }
+    
+    // Fallback: Redirect to Google Drive direct download
+    const directDownloadUrl = `https://drive.google.com/uc?export=download&id=${folderId}`;
+    
     // Mark this sheet as accessed (for tracking)
     await supabaseAdmin
       .from('game_participants')
@@ -506,6 +581,9 @@ router.get('/sheets/secure-download/:participationId/:sheetNumber', authenticate
         updated_at: new Date().toISOString()
       })
       .eq('id', participationId);
+    
+    // Redirect to Google Drive for direct download
+    res.redirect(directDownloadUrl);
 
   } catch (error) {
     console.error('Error in secure sheet download:', error);

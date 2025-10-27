@@ -350,20 +350,76 @@ class AdminManager {
     }
   }
 
-  exportData(type) {
-    app.showNotification(`Exporting ${type} data...`, 'info');
-    // In a real implementation, this would trigger a download
-    window.open(`/api/admin/export/${type}`, '_blank');
+  async exportData(type) {
+    try {
+      app.showNotification(`Preparing ${type} data export...`, 'info');
+      await this.downloadWithAuth(`/api/admin/export/${type}`, `${type}_export.csv`);
+    } catch (error) {
+      console.error('Export error:', error);
+      app.showNotification(`Failed to export ${type} data`, 'error');
+    }
   }
 
-  exportAllData() {
-    app.showNotification('Exporting all platform data...', 'info');
-    // Export all data types
-    ['users', 'organisers', 'games', 'participants'].forEach(type => {
-      setTimeout(() => {
-        window.open(`/api/admin/export/${type}`, '_blank');
-      }, 1000);
-    });
+  async exportAllData() {
+    try {
+      app.showNotification('Exporting all platform data...', 'info');
+      
+      // Export all data types with delay
+      const types = ['users', 'organisers', 'games', 'participants', 'financial'];
+      
+      for (let i = 0; i < types.length; i++) {
+        setTimeout(async () => {
+          try {
+            await this.downloadWithAuth(`/api/admin/export/${types[i]}`, `${types[i]}_export.csv`);
+          } catch (error) {
+            console.error(`Failed to export ${types[i]}:`, error);
+          }
+        }, i * 1000); // 1 second delay between downloads
+      }
+      
+      app.showNotification('All exports initiated. Downloads will start shortly.', 'success');
+    } catch (error) {
+      console.error('Export all error:', error);
+      app.showNotification('Failed to export all data', 'error');
+    }
+  }
+
+  // Helper method to download files with authentication
+  async downloadWithAuth(url, filename) {
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${app.token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Export failed: ${response.statusText}`);
+      }
+
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = filename;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      window.URL.revokeObjectURL(downloadUrl);
+      document.body.removeChild(link);
+      
+      app.showNotification('Export completed successfully!', 'success');
+      
+    } catch (error) {
+      console.error('Download error:', error);
+      app.showNotification('Export failed. Please try again.', 'error');
+    }
   }
 
   viewUser(userId) {

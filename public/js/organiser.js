@@ -330,27 +330,72 @@ class OrganiserManager {
       const allGames = response.games || [];
       
       // Get participants for all games
-      let pendingCount = 0;
+      let allPendingParticipants = [];
       const widget = document.getElementById('pendingVerificationsWidget');
       
-      for (const game of allGames.slice(0, 3)) {
+      for (const game of allGames) {
         try {
           const participantsResponse = await app.apiCall(`/organiser/games/${game.id}/participants`);
           const pending = participantsResponse.participants?.filter(p => p.payment_status === 'pending') || [];
-          pendingCount += pending.length;
+          
+          // Add game info to each pending participant
+          pending.forEach(participant => {
+            participant.gameName = game.name;
+            participant.gameId = game.id;
+            allPendingParticipants.push(participant);
+          });
         } catch (error) {
           console.error('Error loading participants for game:', game.id);
         }
       }
 
       if (widget) {
-        if (pendingCount === 0) {
+        if (allPendingParticipants.length === 0) {
           widget.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No pending verifications</p>';
         } else {
+          // Show detailed list of pending verifications with action buttons
           widget.innerHTML = `
-            <div style="text-align: center; padding: 20px;">
-              <div style="font-size: 2rem; color: var(--warning-color); margin-bottom: 10px;">${pendingCount}</div>
-              <div style="color: var(--text-light);">Pending Verifications</div>
+            <div class="pending-verifications-list">
+              <div class="pending-header">
+                <span class="pending-count">${allPendingParticipants.length}</span>
+                <span class="pending-label">Pending Verifications</span>
+              </div>
+              <div class="pending-items">
+                ${allPendingParticipants.slice(0, 5).map(participant => `
+                  <div class="pending-item" data-participant-id="${participant.id}">
+                    <div class="pending-info">
+                      <div class="participant-name">${participant.users?.username || 'Unknown User'}</div>
+                      <div class="game-name">${participant.gameName}</div>
+                      <div class="payment-details">
+                        <span class="amount">₹${participant.amount_paid}</span>
+                        <span class="sheets">${participant.selected_sheet_numbers?.length || 0} sheets</span>
+                      </div>
+                      ${participant.payment_screenshot_url ? 
+                        `<div class="screenshot-link">
+                          <a href="${participant.payment_screenshot_url}" target="_blank" class="btn-view-screenshot">
+                            📷 View Screenshot
+                          </a>
+                        </div>` : ''
+                      }
+                    </div>
+                    <div class="pending-actions">
+                      <button class="btn btn-success btn-sm" onclick="organiserManager.approveParticipant('${participant.id}', '${participant.gameId}')">
+                        ✓ Approve
+                      </button>
+                      <button class="btn btn-danger btn-sm" onclick="organiserManager.denyParticipant('${participant.id}', '${participant.gameId}')">
+                        ✗ Deny
+                      </button>
+                    </div>
+                  </div>
+                `).join('')}
+                ${allPendingParticipants.length > 5 ? 
+                  `<div class="view-all-pending">
+                    <button class="btn btn-secondary" onclick="organiserManager.switchSection('participants')">
+                      View All ${allPendingParticipants.length} Pending
+                    </button>
+                  </div>` : ''
+                }
+              </div>
             </div>
           `;
         }
@@ -630,6 +675,49 @@ class OrganiserManager {
       
     } catch (error) {
       app.showNotification(error.message || `Failed to ${status} participant`, 'error');
+    }
+  }
+
+  async approveParticipant(participantId, gameId) {
+    try {
+      const response = await app.apiCall(`/organiser/participants/${participantId}/status`, 'PUT', {
+        status: 'approved'
+      });
+
+      app.showNotification('Participant approved successfully', 'success');
+      
+      // Reload pending verifications and participants
+      await this.loadPendingVerifications();
+      if (this.currentSection === 'participants') {
+        await this.loadParticipants();
+      }
+      
+    } catch (error) {
+      app.showNotification(error.message || 'Failed to approve participant', 'error');
+    }
+  }
+
+  async denyParticipant(participantId, gameId) {
+    try {
+      // Show confirmation dialog
+      if (!confirm('Are you sure you want to deny this participant? This action cannot be undone.')) {
+        return;
+      }
+
+      const response = await app.apiCall(`/organiser/participants/${participantId}/status`, 'PUT', {
+        status: 'denied'
+      });
+
+      app.showNotification('Participant denied', 'success');
+      
+      // Reload pending verifications and participants
+      await this.loadPendingVerifications();
+      if (this.currentSection === 'participants') {
+        await this.loadParticipants();
+      }
+      
+    } catch (error) {
+      app.showNotification(error.message || 'Failed to deny participant', 'error');
     }
   }
 
@@ -1016,8 +1104,92 @@ class OrganiserManager {
     app.showNotification('Game details view coming soon', 'info');
   }
 
-  exportData(type) {
-    app.showNotification(`${type} data export coming soon`, 'info');
+  async exportData(type) {
+    try {
+      app.showNotification(`Preparing ${type} data export...`, 'info');
+      
+      // Create a temporary link to trigger download
+      const link = document.createElement('a');
+      link.href = `/api/organiser/export/${type}`;
+      link.target = '_blank';
+      link.style.display = 'none';
+      
+      // Add authorization header by creating a form and submitting it
+      const form = document.createElement('form');
+      form.method = 'GET';
+      form.action = `/api/organiser/export/${type}`;
+      form.style.display = 'none';
+      
+      // Add authorization as a hidden input (this won't work for GET, so we'll use a different approach)
+      document.body.appendChild(form);
+      
+      // Alternative: Use fetch to download the file
+      const response = await app.apiCall(`/organiser/export/${type}`, 'GET');
+      
+      // If the response is successful, it should be a blob
+      if (response instanceof Blob || typeof response === 'string') {
+        const blob = response instanceof Blob ? response : new Blob([response], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        
+        link.href = url;
+        link.download = `${type}_export_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        
+        // Cleanup
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+        document.body.removeChild(form);
+        
+        app.showNotification(`${type} data exported successfully!`, 'success');
+      } else {
+        // If we get here, the API returned JSON (likely an error or the data)
+        // Let's try the direct window.open approach with auth headers
+        this.downloadWithAuth(`/api/organiser/export/${type}`, `${type}_export.csv`);
+      }
+      
+    } catch (error) {
+      console.error('Export error:', error);
+      app.showNotification(error.message || `Failed to export ${type} data`, 'error');
+    }
+  }
+
+  // Helper method to download files with authentication
+  async downloadWithAuth(url, filename) {
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${app.token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Export failed: ${response.statusText}`);
+      }
+
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = filename;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      window.URL.revokeObjectURL(downloadUrl);
+      document.body.removeChild(link);
+      
+      app.showNotification('Export completed successfully!', 'success');
+      
+    } catch (error) {
+      console.error('Download error:', error);
+      app.showNotification('Export failed. Please try again.', 'error');
+    }
   }
 
   // Google Drive folder validation
