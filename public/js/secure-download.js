@@ -165,12 +165,13 @@ class SecureDownloadManager {
       app.showNotification('🔐 Initiating secure download...', 'info');
       
       // Try to create a direct download link with enhanced security
-      const response = await app.apiCall(`/games/sheets/direct-download/${this.participationId}/${this.sheetNumber}`);
+      const response = await app.apiCall(`/games/sheets/secure-download/${this.participationId}/${this.sheetNumber}`);
       
       if (response.success) {
-        if (response.secureUrl) {
+        if (response.downloadUrl || response.secureUrl) {
           // Redirect to the secure download URL
-          window.location.href = response.secureUrl;
+          const downloadUrl = response.downloadUrl || response.secureUrl;
+          window.location.href = downloadUrl;
           app.showNotification('✅ Redirecting to secure download...', 'success');
         } else {
           // Show controlled folder access with strict warnings
