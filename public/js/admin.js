@@ -82,6 +82,11 @@ class AdminManager {
       }
     });
 
+    // Header button to open/close sidebar on mobile
+    document.getElementById('adminSidebarOpen')?.addEventListener('click', () => {
+      document.getElementById('adminSidebar').classList.toggle('open');
+    });
+
     // Settings form
     document.getElementById('settingsForm')?.addEventListener('submit', (e) => {
       e.preventDefault();

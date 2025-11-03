@@ -91,6 +91,11 @@ class OrganiserManager {
       }
     });
 
+    // Header button to open/close sidebar on mobile
+    document.getElementById('organiserSidebarOpen')?.addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
     // Profile form
     document.getElementById('profileForm')?.addEventListener('submit', (e) => {
       e.preventDefault();
