@@ -1,6 +1,7 @@
 const express = require('express');
 const { supabase, supabaseAdmin } = require('../config/database');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const router = express.Router();
 
 // Middleware to verify admin token
@@ -23,6 +24,14 @@ const authenticateAdmin = (req, res, next) => {
     next();
   });
 };
+
+function timingSafeEqualString(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  const aBuf = Buffer.from(a, 'utf8');
+  const bBuf = Buffer.from(b, 'utf8');
+  if (aBuf.length !== bBuf.length) return false;
+  return crypto.timingSafeEqual(aBuf, bBuf);
+}
 
 // Get all organisers
 router.get('/organisers', authenticateAdmin, async (req, res) => {
@@ -86,7 +95,34 @@ router.get('/organisers/pending', authenticateAdmin, async (req, res) => {
 router.put('/organisers/:id/status', authenticateAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    const { approved } = req.body;
+    const { approved, approvalCode } = req.body;
+
+    // If approving an organiser, require a preset alphanumeric approval code.
+    // This allows the platform owner to control approvals.
+    if (approved === true) {
+      const requiredCode = (process.env.ORGANISER_APPROVAL_CODE || '').trim();
+
+      if (!requiredCode) {
+        return res.status(500).json({
+          error: 'Organiser approval code not configured',
+          message: 'Set ORGANISER_APPROVAL_CODE in environment variables to approve organisers.'
+        });
+      }
+
+      if (typeof approvalCode !== 'string' || approvalCode.trim() === '') {
+        return res.status(400).json({
+          error: 'Approval code required',
+          message: 'Enter the organiser approval code to approve this organiser.'
+        });
+      }
+
+      if (!timingSafeEqualString(approvalCode.trim(), requiredCode)) {
+        return res.status(403).json({
+          error: 'Invalid approval code',
+          message: 'The provided organiser approval code is incorrect.'
+        });
+      }
+    }
 
     // For rejected organisers, we'll use a custom field to track rejection
     // Since we can't easily add a new column, we'll use a workaround
