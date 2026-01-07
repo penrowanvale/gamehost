@@ -343,18 +343,9 @@ class AdminManager {
 
   async approveOrganiser(organiserId, approved) {
     try {
-      const payload = { approved: approved };
-
-      // Require a preset approval code when approving organisers
-      if (approved === true) {
-        const code = window.prompt('Enter organiser approval code to approve:');
-        if (code === null) {
-          return; // user cancelled
-        }
-        payload.approvalCode = code;
-      }
-
-      const response = await app.apiCall(`/admin/organisers/${organiserId}/status`, 'PUT', payload);
+      const response = await app.apiCall(`/admin/organisers/${organiserId}/status`, 'PUT', {
+        approved: approved
+      });
 
       app.showNotification(`Organiser ${approved ? 'approved' : 'rejected'} successfully`, 'success');
       await this.loadOrganisers();

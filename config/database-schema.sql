@@ -26,14 +26,6 @@ CREATE TABLE organisers (
     whatsapp_number VARCHAR(20),
     aadhaar_front_url TEXT,
     aadhaar_back_url TEXT,
-    -- Two-step approval:
-    -- 1) admin_approved: approved by normal admin panel
-    -- 2) super_approved: approved from /thealphaapprovalsystem
-    -- is_approved becomes true only when BOTH are true
-    admin_approved BOOLEAN DEFAULT false,
-    admin_approved_at TIMESTAMP WITH TIME ZONE,
-    super_approved BOOLEAN DEFAULT false,
-    super_approved_at TIMESTAMP WITH TIME ZONE,
     is_approved BOOLEAN DEFAULT false,
     monthly_fee_paid BOOLEAN DEFAULT false,
     google_drive_folder_id TEXT,
