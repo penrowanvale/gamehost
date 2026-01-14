@@ -1,16 +1,61 @@
-const cron = require('node-cron');
-const { GoogleDriveStorage } = require('../config/google-drive-storage');
+// node-cron is optional - only works on traditional servers, not serverless
+let cron = null;
+try {
+  cron = require('node-cron');
+} catch (error) {
+  console.warn('⚠️ node-cron not available - scheduler disabled');
+}
+
+// GoogleDriveStorage is also optional
+let GoogleDriveStorage = null;
+try {
+  GoogleDriveStorage = require('../config/google-drive-storage').GoogleDriveStorage;
+} catch (error) {
+  console.warn('⚠️ GoogleDriveStorage not available - scheduler disabled');
+}
 
 class CleanupScheduler {
   constructor() {
-    this.driveStorage = new GoogleDriveStorage();
-    this.setupScheduler();
+    // Check if we're in serverless mode - don't run scheduler
+    const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NETLIFY;
+    if (isServerless) {
+      console.log('⚠️ SCHEDULER: Running in serverless mode - cron scheduler disabled');
+      console.log('💡 TIP: Use Vercel Cron Jobs for scheduled cleanup: https://vercel.com/docs/cron-jobs');
+      this.driveStorage = null;
+      return;
+    }
+
+    // Check if dependencies are available
+    if (!cron) {
+      console.log('⚠️ SCHEDULER: node-cron not available - cleanup scheduler disabled');
+      this.driveStorage = null;
+      return;
+    }
+
+    if (!GoogleDriveStorage) {
+      console.log('⚠️ SCHEDULER: GoogleDriveStorage not available - cleanup scheduler disabled');
+      this.driveStorage = null;
+      return;
+    }
+
+    try {
+      this.driveStorage = new GoogleDriveStorage();
+      this.setupScheduler();
+    } catch (error) {
+      console.error('❌ SCHEDULER: Failed to initialize Google Drive storage:', error.message);
+      this.driveStorage = null;
+    }
   }
 
   setupScheduler() {
     // Check if Google Drive is configured
     if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY || !process.env.GOOGLE_DRIVE_STORAGE_FOLDER_ID) {
       console.log('⚠️ SCHEDULER: Google Drive not configured - cleanup scheduler disabled');
+      return;
+    }
+
+    if (!cron) {
+      console.log('⚠️ SCHEDULER: Cron library not available');
       return;
     }
 
@@ -32,6 +77,12 @@ class CleanupScheduler {
   }
 
   async runDailyCleanup() {
+    // Check if driveStorage is available
+    if (!this.driveStorage) {
+      console.log('⚠️ CLEANUP: Drive storage not initialized - skipping cleanup');
+      return { deletedCount: 0, totalSize: 0, skipped: true };
+    }
+
     try {
       const folderId = process.env.GOOGLE_DRIVE_STORAGE_FOLDER_ID;
       
@@ -48,10 +99,13 @@ class CleanupScheduler {
       } else {
         console.log('🧹 CLEANUP: No old files to delete');
       }
+
+      return result;
       
     } catch (error) {
       console.error('❌ CLEANUP ERROR:', error);
       // In production, you might want to send an alert here
+      return { deletedCount: 0, totalSize: 0, error: error.message };
     }
   }
 

@@ -3,27 +3,91 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
-// Initialize cleanup scheduler for Google Drive storage
-const CleanupScheduler = require('./scripts/cleanup-scheduler');
+// NOTE: Cleanup scheduler is lazy-loaded only when running as a traditional server
+// This prevents crashes on serverless platforms (Vercel, AWS Lambda)
+let CleanupScheduler = null;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Detect if running in serverless environment
+const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NETLIFY;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Health check endpoint - useful for debugging deployment issues
+app.get('/api/health', (req, res) => {
+  const { isConfigured, missingEnvVars } = require('./config/database');
+  
+  const health = {
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: isServerless ? 'serverless' : 'traditional',
+    platform: process.env.VERCEL ? 'vercel' : (process.env.AWS_LAMBDA_FUNCTION_NAME ? 'aws-lambda' : 'node'),
+    nodeVersion: process.version,
+    database: {
+      configured: isConfigured,
+      missingVars: missingEnvVars || []
+    },
+    envVars: {
+      SUPABASE_URL: !!process.env.SUPABASE_URL,
+      SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      SUPABASE_ANON_KEY: !!process.env.SUPABASE_ANON_KEY,
+      JWT_SECRET: !!process.env.JWT_SECRET,
+      GOOGLE_SERVICE_ACCOUNT_KEY: !!process.env.GOOGLE_SERVICE_ACCOUNT_KEY,
+      GOOGLE_DRIVE_STORAGE_FOLDER_ID: !!process.env.GOOGLE_DRIVE_STORAGE_FOLDER_ID
+    }
+  };
+  
+  // Set overall status based on database configuration
+  if (!isConfigured) {
+    health.status = 'degraded';
+    health.message = 'Database not configured - API endpoints will not work';
+  }
+  
+  res.json(health);
+});
+
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Import API routes
-const authRoutes = require('./api/auth');
-const gameRoutes = require('./api/games');
-const organiserRoutes = require('./api/organiser');
-const adminRoutes = require('./api/admin');
-const userRoutes = require('./api/users');
-const contactRoutes = require('./api/contact');
+// Import API routes with error handling
+let authRoutes, gameRoutes, organiserRoutes, adminRoutes, userRoutes, contactRoutes;
+
+try {
+  authRoutes = require('./api/auth');
+  gameRoutes = require('./api/games');
+  organiserRoutes = require('./api/organiser');
+  adminRoutes = require('./api/admin');
+  userRoutes = require('./api/users');
+  contactRoutes = require('./api/contact');
+  console.log('✅ All API routes loaded successfully');
+} catch (error) {
+  console.error('❌ Failed to load API routes:', error.message);
+  // Create fallback routes that return helpful error messages
+  const createFallbackRoute = (routeName) => {
+    const router = require('express').Router();
+    router.all('*', (req, res) => {
+      res.status(503).json({
+        error: 'Service temporarily unavailable',
+        message: `The ${routeName} service failed to initialize`,
+        details: error.message,
+        help: 'Please check your environment variables and try again'
+      });
+    });
+    return router;
+  };
+  
+  authRoutes = authRoutes || createFallbackRoute('auth');
+  gameRoutes = gameRoutes || createFallbackRoute('games');
+  organiserRoutes = organiserRoutes || createFallbackRoute('organiser');
+  adminRoutes = adminRoutes || createFallbackRoute('admin');
+  userRoutes = userRoutes || createFallbackRoute('users');
+  contactRoutes = contactRoutes || createFallbackRoute('contact');
+}
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -102,31 +166,64 @@ app.get('/image-upload-guide.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'image-upload-guide.html'));
 });
 
-// Handle 404
+// Global error handler - prevents serverless function crashes
+app.use((err, req, res, next) => {
+  console.error('💥 Unhandled error:', err.message);
+  console.error('Stack:', err.stack);
+  
+  // Don't expose internal errors in production
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  res.status(500).json({
+    error: 'Internal server error',
+    message: isProduction ? 'Something went wrong' : err.message,
+    ...(isProduction ? {} : { stack: err.stack })
+  });
+});
+
+// Handle 404 for API routes
+app.use('/api/*', (req, res) => {
+  res.status(404).json({
+    error: 'Not found',
+    message: `API endpoint ${req.originalUrl} does not exist`
+  });
+});
+
+// Handle 404 for other routes - serve the SPA
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📱 Dashboard: http://localhost:${PORT}`);
-  console.log(`👥 Admin: http://localhost:${PORT}/admin.html`);
-  console.log(`🎮 Organiser: http://localhost:${PORT}/organiser.html`);
-  
-  // Initialize Google Drive cleanup scheduler
-  if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY && process.env.GOOGLE_DRIVE_STORAGE_FOLDER_ID) {
-    try {
-      console.log('☁️ Initializing Google Drive storage cleanup scheduler...');
-      new CleanupScheduler();
-      console.log('✅ Google Drive auto-cleanup enabled (2-day retention)');
-    } catch (error) {
-      console.error('❌ Failed to initialize Google Drive cleanup scheduler:', error.message);
-      console.log('⚠️ Cleanup scheduler disabled - manual cleanup still available');
+// Only start listening if NOT in serverless mode
+// Vercel handles this automatically through the exported app
+if (!isServerless) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📱 Dashboard: http://localhost:${PORT}`);
+    console.log(`👥 Admin: http://localhost:${PORT}/admin.html`);
+    console.log(`🎮 Organiser: http://localhost:${PORT}/organiser.html`);
+    
+    // Initialize Google Drive cleanup scheduler ONLY on traditional servers
+    // Serverless functions don't support cron jobs - use Vercel Cron or external scheduler
+    if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY && process.env.GOOGLE_DRIVE_STORAGE_FOLDER_ID) {
+      try {
+        console.log('☁️ Initializing Google Drive storage cleanup scheduler...');
+        // Lazy load the scheduler only when needed
+        CleanupScheduler = require('./scripts/cleanup-scheduler');
+        new CleanupScheduler();
+        console.log('✅ Google Drive auto-cleanup enabled (2-day retention)');
+      } catch (error) {
+        console.error('❌ Failed to initialize Google Drive cleanup scheduler:', error.message);
+        console.log('⚠️ Cleanup scheduler disabled - manual cleanup still available');
+      }
+    } else {
+      console.log('⚠️ Google Drive storage not configured - skipping cleanup scheduler');
+      console.log('📖 See GOOGLE_DRIVE_STORAGE_SETUP.md for setup instructions');
     }
-  } else {
-    console.log('⚠️ Google Drive storage not configured - skipping cleanup scheduler');
-    console.log('📖 See GOOGLE_DRIVE_STORAGE_SETUP.md for setup instructions');
-  }
-});
+  });
+} else {
+  console.log('☁️ Running in serverless mode (Vercel/Lambda/Netlify)');
+  console.log('⚠️ Cleanup scheduler disabled - use Vercel Cron Jobs for scheduled tasks');
+}
 
 module.exports = app;

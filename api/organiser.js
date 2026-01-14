@@ -7,33 +7,43 @@ const jwt = require('jsonwebtoken');
 const { GoogleDriveStorage, MulterGoogleDriveStorage } = require('../config/google-drive-storage');
 const router = express.Router();
 
-// Initialize Google Drive Storage
-const driveStorage = new GoogleDriveStorage();
+// Initialize Google Drive Storage (lazy - won't crash if not configured)
+let driveStorage = null;
+try {
+  driveStorage = new GoogleDriveStorage();
+} catch (error) {
+  console.warn('⚠️ Google Drive Storage initialization skipped:', error.message);
+}
 
-// LOG ENVIRONMENT VARIABLES ON STARTUP
-console.log('\n' + '='.repeat(70));
-console.log('🔍 GOOGLE DRIVE CONFIGURATION CHECK');
-console.log('='.repeat(70));
-console.log('GOOGLE_SERVICE_ACCOUNT_KEY:', process.env.GOOGLE_SERVICE_ACCOUNT_KEY ? 
-  `SET (${process.env.GOOGLE_SERVICE_ACCOUNT_KEY.substring(0, 50)}...)` : 
-  '❌ NOT SET');
-console.log('GOOGLE_DRIVE_STORAGE_FOLDER_ID:', process.env.GOOGLE_DRIVE_STORAGE_FOLDER_ID || '❌ NOT SET');
-console.log('='.repeat(70) + '\n');
+// LOG ENVIRONMENT VARIABLES ON STARTUP (only in non-production for security)
+if (process.env.NODE_ENV !== 'production') {
+  console.log('\n' + '='.repeat(70));
+  console.log('🔍 GOOGLE DRIVE CONFIGURATION CHECK');
+  console.log('='.repeat(70));
+  console.log('GOOGLE_SERVICE_ACCOUNT_KEY:', process.env.GOOGLE_SERVICE_ACCOUNT_KEY ? 
+    `SET (${process.env.GOOGLE_SERVICE_ACCOUNT_KEY.substring(0, 50)}...)` : 
+    '❌ NOT SET');
+  console.log('GOOGLE_DRIVE_STORAGE_FOLDER_ID:', process.env.GOOGLE_DRIVE_STORAGE_FOLDER_ID || '❌ NOT SET');
+  console.log('='.repeat(70) + '\n');
+}
 
 // Configure multer for Google Drive uploads with compression
 const createGoogleDriveUpload = () => {
-  // CRITICAL: Validate folder ID before creating multer instance
   const folderId = process.env.GOOGLE_DRIVE_STORAGE_FOLDER_ID;
   
+  // Don't throw error - just log warning and return a disabled uploader
   if (!folderId || folderId.trim() === '') {
-    console.error('❌ CRITICAL ERROR: GOOGLE_DRIVE_STORAGE_FOLDER_ID is not set!');
-    console.error('   Current value:', folderId);
-    console.error('   This environment variable MUST be set in Vercel.');
-    console.error('   See QUICK_FIX_CHECKLIST.md for setup instructions.');
-    throw new Error(
-      'GOOGLE_DRIVE_STORAGE_FOLDER_ID environment variable is required. ' +
-      'Please set it in Vercel Dashboard → Settings → Environment Variables'
-    );
+    console.warn('⚠️ GOOGLE_DRIVE_STORAGE_FOLDER_ID is not set - file uploads disabled');
+    console.warn('   Set this in your Vercel Environment Variables to enable uploads');
+    
+    // Return a multer instance that stores to /tmp (will fail gracefully)
+    return multer({
+      storage: multer.diskStorage({
+        destination: '/tmp',
+        filename: (req, file, cb) => cb(null, `temp_${Date.now()}_${file.originalname}`)
+      }),
+      limits: { fileSize: 50 * 1024 * 1024, files: 100 }
+    });
   }
   
   console.log(`✅ Creating Google Drive uploader with folder: ${folderId}`);
@@ -43,7 +53,7 @@ const createGoogleDriveUpload = () => {
       tempDir: process.env.TEMP_DIR || '/tmp',
       compressionQuality: parseInt(process.env.COMPRESSION_QUALITY) || 75,
       parentFolderId: folderId
-      }),
+    }),
     limits: {
       fileSize: 50 * 1024 * 1024, // 50MB limit per file (will be compressed)
       files: 100 // Max 100 files at once
