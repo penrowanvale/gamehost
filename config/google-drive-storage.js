@@ -1,14 +1,33 @@
 const { google } = require('googleapis');
 const fs = require('fs');
 const path = require('path');
-const sharp = require('sharp');
 const multer = require('multer');
+
+// Sharp is optional - may not be available on all serverless platforms
+let sharp = null;
+let sharpAvailable = false;
+try {
+  sharp = require('sharp');
+  sharpAvailable = true;
+  console.log('✅ Sharp image processing available');
+} catch (error) {
+  console.warn('⚠️ Sharp not available - image compression disabled');
+  console.warn('   This is normal on some serverless platforms (Vercel, AWS Lambda)');
+  console.warn('   Images will be uploaded without compression');
+}
 
 class GoogleDriveStorage {
   constructor() {
     this.drive = null;
     this.auth = null;
+    this.initialized = false;
+    this.initError = null;
     this.initializeAuth();
+  }
+  
+  // Check if storage is ready to use
+  isReady() {
+    return this.initialized && this.drive !== null;
   }
   
   // Extract folder ID from URL or return ID if already clean
@@ -44,7 +63,11 @@ class GoogleDriveStorage {
       const serviceAccountKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
       
       if (!serviceAccountKey) {
-        throw new Error('GOOGLE_SERVICE_ACCOUNT_KEY environment variable not set');
+        // Don't throw - just mark as not initialized
+        this.initError = 'GOOGLE_SERVICE_ACCOUNT_KEY environment variable not set';
+        console.warn('⚠️ Google Drive Storage not initialized:', this.initError);
+        console.warn('💡 TIP: Set GOOGLE_SERVICE_ACCOUNT_KEY in your environment variables');
+        return;
       }
       
       let authConfig;
@@ -65,7 +88,9 @@ class GoogleDriveStorage {
         
         // Check if file exists
         if (!fs.existsSync(serviceAccountKey)) {
-          throw new Error(`Service account key file not found: ${serviceAccountKey}`);
+          this.initError = `Service account key file not found: ${serviceAccountKey}`;
+          console.warn('⚠️ Google Drive Storage not initialized:', this.initError);
+          return;
         }
         
         authConfig = {
@@ -76,14 +101,16 @@ class GoogleDriveStorage {
       
       this.auth = new google.auth.GoogleAuth(authConfig);
       this.drive = google.drive({ version: 'v3', auth: this.auth });
+      this.initialized = true;
       
       console.log('✅ Google Drive Storage initialized successfully');
     } catch (error) {
+      this.initError = error.message;
       console.error('❌ Google Drive Storage initialization failed:', error.message);
       console.error('💡 TIP: Set GOOGLE_SERVICE_ACCOUNT_KEY to either:');
       console.error('   1. Full JSON string (for Vercel): {"type":"service_account",...}');
       console.error('   2. File path (for local): /path/to/service-account.json');
-      throw error;
+      // Don't throw - allow the server to start
     }
   }
 
@@ -97,6 +124,19 @@ class GoogleDriveStorage {
       
       const stats = fs.statSync(inputPath);
       const originalSize = stats.size;
+
+      // If sharp is not available, just copy the file without compression
+      if (!sharpAvailable || !sharp) {
+        console.log(`📦 SKIP COMPRESSION: Sharp not available, copying ${path.basename(inputPath)} without compression`);
+        fs.copyFileSync(inputPath, outputPath);
+        return {
+          originalSize,
+          compressedSize: originalSize,
+          compressionRatio: 0,
+          outputPath,
+          skipped: true
+        };
+      }
 
       // Determine output format based on input
       const ext = path.extname(inputPath).toLowerCase();
@@ -129,7 +169,17 @@ class GoogleDriveStorage {
       };
     } catch (error) {
       console.error('❌ Image compression failed:', error);
-      throw error;
+      // Fallback: copy without compression if sharp fails
+      console.log(`⚠️ Falling back to uncompressed upload`);
+      fs.copyFileSync(inputPath, outputPath);
+      const stats = fs.statSync(inputPath);
+      return {
+        originalSize: stats.size,
+        compressedSize: stats.size,
+        compressionRatio: 0,
+        outputPath,
+        fallback: true
+      };
     }
   }
 
@@ -166,8 +216,8 @@ class GoogleDriveStorage {
     const parentFolderId = parentFolderIdOrUrl ? this.extractFolderId(parentFolderIdOrUrl) : null;
     
     try {
-      if (!this.drive) {
-        throw new Error('Google Drive not initialized');
+      if (!this.drive || !this.initialized) {
+        throw new Error(`Google Drive not initialized: ${this.initError || 'Unknown error'}`);
       }
       
       console.log('🔍 UPLOAD DEBUG:', {
@@ -536,6 +586,7 @@ class MulterGoogleDriveStorage {
     this.driveStorage = new GoogleDriveStorage();
     this.tempDir = options.tempDir || '/tmp';
     this.compressionQuality = options.compressionQuality || 80;
+    this.isConfigured = false;
     
     // CRITICAL: Extract and validate folder ID
     const rawFolderId = options.parentFolderId;
@@ -550,22 +601,20 @@ class MulterGoogleDriveStorage {
     });
     
     if (!rawFolderId || rawFolderId.trim() === '') {
-      console.error('❌ CRITICAL ERROR: parentFolderId is missing or empty!');
-      console.error('   Received value:', rawFolderId);
-      console.error('   Type:', typeof rawFolderId);
-      console.error('   From environment variable: GOOGLE_DRIVE_STORAGE_FOLDER_ID');
-      console.error('   Current env value:', process.env.GOOGLE_DRIVE_STORAGE_FOLDER_ID);
-      
-      throw new Error(
-        '❌ GOOGLE_DRIVE_STORAGE_FOLDER_ID is required!\n' +
-        `Received value: ${JSON.stringify(rawFolderId)}\n` +
-        `Type: ${typeof rawFolderId}\n` +
-        `Environment variable value: ${process.env.GOOGLE_DRIVE_STORAGE_FOLDER_ID || 'NOT SET'}\n` +
-        'Service accounts cannot upload to "My Drive" - you must specify a shared folder.\n' +
-        'Set GOOGLE_DRIVE_STORAGE_FOLDER_ID in your environment variables.\n' +
-        'See GOOGLE_DRIVE_SERVICE_ACCOUNT_FIX.md for setup instructions.\n' +
-        'Visit /test-env.html to verify your environment variables.'
-      );
+      console.warn('⚠️ GOOGLE_DRIVE_STORAGE_FOLDER_ID is not set');
+      console.warn('   File uploads will fail until this is configured');
+      console.warn('   Set GOOGLE_DRIVE_STORAGE_FOLDER_ID in your Vercel Environment Variables');
+      this.parentFolderId = null;
+      return; // Don't throw - allow server to start
+    }
+    
+    // Check if drive storage is initialized
+    if (!this.driveStorage.isReady() && !this.driveStorage.initialized) {
+      console.warn('⚠️ Google Drive storage not initialized');
+      console.warn('   Error:', this.driveStorage.initError);
+      console.warn('   File uploads will fail until Google credentials are configured');
+      this.parentFolderId = null;
+      return; // Don't throw - allow server to start
     }
     
     // Extract folder ID from URL or use as-is
@@ -573,18 +622,25 @@ class MulterGoogleDriveStorage {
     
     if (!this.parentFolderId) {
       console.error('❌ Failed to extract folder ID from:', rawFolderId);
-      throw new Error(
-        `❌ Invalid GOOGLE_DRIVE_STORAGE_FOLDER_ID: "${rawFolderId}"\n` +
-        'Please provide either:\n' +
-        '  - Folder ID: 1PIgEhMR2-rVHbbfpELSYDakzYlEkWBXM\n' +
-        '  - Full URL: https://drive.google.com/drive/folders/1PIgEhMR2-rVHbbfpELSYDakzYlEkWBXM'
-      );
+      console.warn('   File uploads will fail until a valid folder ID is provided');
+      return; // Don't throw - allow server to start
     }
     
+    this.isConfigured = true;
     console.log(`✅ Google Drive upload folder configured: ${this.parentFolderId}`);
   }
 
   _handleFile(req, file, cb) {
+    // Check if configured before processing
+    if (!this.isConfigured || !this.parentFolderId) {
+      const errorMsg = !process.env.GOOGLE_DRIVE_STORAGE_FOLDER_ID 
+        ? 'GOOGLE_DRIVE_STORAGE_FOLDER_ID not configured'
+        : (!this.driveStorage.initialized 
+          ? `Google Drive not initialized: ${this.driveStorage.initError}` 
+          : 'Upload folder not configured');
+      return cb(new Error(`File upload unavailable: ${errorMsg}`));
+    }
+
     // Ensure temp directory exists
     if (!fs.existsSync(this.tempDir)) {
       fs.mkdirSync(this.tempDir, { recursive: true });

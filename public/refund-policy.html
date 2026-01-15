@@ -16,6 +16,9 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/legal.css">
+    
+    <!-- Config loader - loads contact details from environment variables -->
+    <script src="/js/config-loader.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -130,9 +133,9 @@
                     <div class="contact-info">
                         <h3>Platform Support</h3>
                         <ul>
-                            <li><strong>Email:</strong> <a href="mailto:support@gameblast.in">support@gameblast.in</a></li>
-                            <li><strong>WhatsApp:</strong> <a href="https://wa.me/+919876543210">+91 98765 43210</a></li>
-                            <li><strong>Support Hours:</strong> 9 AM - 9 PM IST (Daily)</li>
+                            <li><strong>Email:</strong> <a href="mailto:support@example.com" data-config="supportEmail">support@example.com</a></li>
+                            <li><strong>WhatsApp:</strong> <a href="https://wa.me/+919876543210" data-config="supportWhatsApp">+91 98765 43210</a></li>
+                            <li><strong>Support Hours:</strong> <span data-config="supportHours">9 AM - 9 PM IST</span> (Daily)</li>
                         </ul>
 
                         <h3>Required Information for Refund Requests</h3>
