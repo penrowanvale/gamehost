@@ -51,6 +51,18 @@ app.get('/api/health', (req, res) => {
   res.json(health);
 });
 
+// Public config endpoint - returns contact info for frontend display
+// This allows customizing admin details via environment variables
+app.get('/api/config/public', (req, res) => {
+  res.json({
+    appName: process.env.APP_NAME || 'GameBlast Mobile',
+    supportEmail: process.env.SUPPORT_EMAIL || 'support@example.com',
+    supportWhatsApp: process.env.SUPPORT_WHATSAPP || '+919876543210',
+    supportHours: process.env.SUPPORT_HOURS || '9 AM - 9 PM IST',
+    appUrl: process.env.APP_URL || ''
+  });
+});
+
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 

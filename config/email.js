@@ -1,13 +1,32 @@
 const nodemailer = require('nodemailer');
 
+// Get configurable values from environment
+const getConfig = () => ({
+  adminEmail: process.env.ADMIN_EMAIL || 'admin@example.com',
+  supportEmail: process.env.SUPPORT_EMAIL || 'support@example.com',
+  supportWhatsApp: process.env.SUPPORT_WHATSAPP || '+919876543210',
+  appName: process.env.APP_NAME || 'GameBlast Mobile',
+  appUrl: process.env.APP_URL || 'https://example.com',
+  supportHours: process.env.SUPPORT_HOURS || '9 AM - 9 PM IST'
+});
+
 // Email configuration
 const createTransporter = () => {
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPassword = process.env.SMTP_PASSWORD;
+  
+  if (!smtpUser || !smtpPassword) {
+    console.warn('⚠️ SMTP not configured - emails will not be sent');
+    console.warn('   Set SMTP_USER and SMTP_PASSWORD in environment variables');
+    return null;
+  }
+  
   // For Gmail SMTP (you can change this for other providers)
   return nodemailer.createTransporter({
     service: 'gmail',
     auth: {
-      user: process.env.SMTP_USER || process.env.SUPPORT_EMAIL,
-      pass: process.env.SMTP_PASSWORD // App password for Gmail
+      user: smtpUser,
+      pass: smtpPassword // App password for Gmail
     }
   });
 };
@@ -16,11 +35,16 @@ const createTransporter = () => {
 const sendAdminNotification = async (subject, htmlContent, plainTextContent = null) => {
   try {
     const transporter = createTransporter();
-    const adminEmail = process.env.ADMIN_EMAIL || 'managervcreation@gmail.com';
+    const config = getConfig();
+    
+    if (!transporter) {
+      console.warn('⚠️ Email not sent - SMTP not configured');
+      return { success: false, error: 'SMTP not configured' };
+    }
     
     const mailOptions = {
-      from: process.env.SUPPORT_EMAIL || 'support@gameblast.in',
-      to: adminEmail,
+      from: config.supportEmail,
+      to: config.adminEmail,
       subject: subject,
       html: htmlContent,
       text: plainTextContent || htmlContent.replace(/<[^>]*>/g, '') // Strip HTML for plain text
@@ -37,12 +61,13 @@ const sendAdminNotification = async (subject, htmlContent, plainTextContent = nu
 
 // Send organiser signup notification to admin
 const sendOrganiserSignupNotification = async (organiserData, userData) => {
+  const config = getConfig();
   const subject = `🔔 New Organiser Registration Request - ${organiserData.organiser_name}`;
   
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
       <div style="background-color: #1a1a2e; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0;">
-        <h1 style="margin: 0; color: #ff6b35;">🎮 GameBlast Mobile</h1>
+        <h1 style="margin: 0; color: #ff6b35;">🎮 ${config.appName}</h1>
         <h2 style="margin: 10px 0 0 0; font-weight: normal;">New Organiser Registration</h2>
       </div>
       
@@ -94,7 +119,7 @@ const sendOrganiserSignupNotification = async (organiserData, userData) => {
         </div>
 
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${process.env.CORS_ORIGINS?.split(',')[1] || 'https://gameblast.in'}/admin" 
+          <a href="${config.appUrl}/admin" 
              style="background-color: #ff6b35; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
             🔗 Open Admin Panel
           </a>
@@ -109,8 +134,8 @@ const sendOrganiserSignupNotification = async (organiserData, userData) => {
       </div>
       
       <div style="text-align: center; margin-top: 20px; color: #6c757d; font-size: 12px;">
-        <p>This is an automated notification from GameBlast Mobile Platform</p>
-        <p>© ${new Date().getFullYear()} GameBlast Mobile. All rights reserved.</p>
+        <p>This is an automated notification from ${config.appName} Platform</p>
+        <p>© ${new Date().getFullYear()} ${config.appName}. All rights reserved.</p>
       </div>
     </div>
   `;
@@ -120,12 +145,13 @@ const sendOrganiserSignupNotification = async (organiserData, userData) => {
 
 // Send user contact form notification to admin
 const sendContactFormNotification = async (contactData) => {
+  const config = getConfig();
   const subject = `📧 New Contact Form Submission - ${contactData.name}`;
   
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
       <div style="background-color: #1a1a2e; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0;">
-        <h1 style="margin: 0; color: #ff6b35;">🎮 GameBlast Mobile</h1>
+        <h1 style="margin: 0; color: #ff6b35;">🎮 ${config.appName}</h1>
         <h2 style="margin: 10px 0 0 0; font-weight: normal;">Contact Form Submission</h2>
       </div>
       
@@ -167,7 +193,7 @@ const sendContactFormNotification = async (contactData) => {
       </div>
       
       <div style="text-align: center; margin-top: 20px; color: #6c757d; font-size: 12px;">
-        <p>This is an automated notification from GameBlast Mobile Platform</p>
+        <p>This is an automated notification from ${config.appName} Platform</p>
       </div>
     </div>
   `;
@@ -177,12 +203,13 @@ const sendContactFormNotification = async (contactData) => {
 
 // Send general admin notification
 const sendGeneralAdminNotification = async (title, message, data = {}) => {
-  const subject = `🔔 GameBlast Admin Alert - ${title}`;
+  const config = getConfig();
+  const subject = `🔔 ${config.appName} Admin Alert - ${title}`;
   
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
       <div style="background-color: #1a1a2e; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0;">
-        <h1 style="margin: 0; color: #ff6b35;">🎮 GameBlast Mobile</h1>
+        <h1 style="margin: 0; color: #ff6b35;">🎮 ${config.appName}</h1>
         <h2 style="margin: 10px 0 0 0; font-weight: normal;">${title}</h2>
       </div>
       
@@ -204,7 +231,7 @@ const sendGeneralAdminNotification = async (title, message, data = {}) => {
         ` : ''}
 
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${process.env.CORS_ORIGINS?.split(',')[1] || 'https://gameblast.in'}/admin" 
+          <a href="${config.appUrl}/admin" 
              style="background-color: #ff6b35; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
             🔗 Open Admin Panel
           </a>
@@ -212,7 +239,7 @@ const sendGeneralAdminNotification = async (title, message, data = {}) => {
       </div>
       
       <div style="text-align: center; margin-top: 20px; color: #6c757d; font-size: 12px;">
-        <p>This is an automated notification from GameBlast Mobile Platform</p>
+        <p>This is an automated notification from ${config.appName} Platform</p>
         <p>Time: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
       </div>
     </div>
@@ -222,6 +249,7 @@ const sendGeneralAdminNotification = async (title, message, data = {}) => {
 };
 
 module.exports = {
+  getConfig,
   sendAdminNotification,
   sendOrganiserSignupNotification,
   sendContactFormNotification,
