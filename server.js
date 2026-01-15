@@ -63,6 +63,145 @@ app.get('/api/config/public', (req, res) => {
   });
 });
 
+// Admin setup endpoint - creates or updates admin from environment variables
+// Call this after deployment: POST /api/setup/admin
+app.post('/api/setup/admin', async (req, res) => {
+  try {
+    const bcrypt = require('bcryptjs');
+    const { supabaseAdmin, isConfigured } = require('./config/database');
+    
+    if (!isConfigured) {
+      return res.status(503).json({ 
+        error: 'Database not configured',
+        message: 'Set SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and SUPABASE_ANON_KEY first'
+      });
+    }
+    
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPhone = process.env.ADMIN_PHONE;
+    const adminUsername = process.env.ADMIN_USERNAME;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    
+    if (!adminEmail || !adminPassword) {
+      return res.status(400).json({ 
+        error: 'Missing admin credentials',
+        message: 'Set ADMIN_EMAIL and ADMIN_PASSWORD in environment variables',
+        required: ['ADMIN_EMAIL', 'ADMIN_PASSWORD'],
+        optional: ['ADMIN_PHONE', 'ADMIN_USERNAME']
+      });
+    }
+    
+    // Check if admin already exists
+    const { data: existingAdmin } = await supabaseAdmin
+      .from('users')
+      .select('id, email, username, role')
+      .eq('role', 'admin')
+      .single();
+    
+    const passwordHash = await bcrypt.hash(adminPassword, 10);
+    
+    if (existingAdmin) {
+      // Update existing admin
+      const { error: updateError } = await supabaseAdmin
+        .from('users')
+        .update({
+          email: adminEmail,
+          phone: adminPhone || existingAdmin.phone,
+          username: adminUsername || existingAdmin.username,
+          password_hash: passwordHash,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', existingAdmin.id);
+      
+      if (updateError) {
+        return res.status(500).json({ error: 'Failed to update admin', details: updateError.message });
+      }
+      
+      return res.json({
+        success: true,
+        message: 'Admin updated successfully',
+        admin: {
+          email: adminEmail,
+          username: adminUsername || existingAdmin.username,
+          action: 'updated'
+        }
+      });
+    }
+    
+    // Create new admin
+    const { data: newAdmin, error: createError } = await supabaseAdmin
+      .from('users')
+      .insert([{
+        email: adminEmail,
+        phone: adminPhone || '0000000000',
+        username: adminUsername || 'admin',
+        password_hash: passwordHash,
+        role: 'admin',
+        is_active: true
+      }])
+      .select('id, email, username')
+      .single();
+    
+    if (createError) {
+      return res.status(500).json({ error: 'Failed to create admin', details: createError.message });
+    }
+    
+    res.json({
+      success: true,
+      message: 'Admin created successfully',
+      admin: {
+        email: newAdmin.email,
+        username: newAdmin.username,
+        action: 'created'
+      }
+    });
+    
+  } catch (error) {
+    console.error('Admin setup error:', error);
+    res.status(500).json({ error: 'Admin setup failed', details: error.message });
+  }
+});
+
+// Check admin status endpoint
+app.get('/api/setup/admin-status', async (req, res) => {
+  try {
+    const { supabaseAdmin, isConfigured } = require('./config/database');
+    
+    if (!isConfigured) {
+      return res.json({ 
+        databaseConfigured: false,
+        adminExists: false,
+        message: 'Database not configured'
+      });
+    }
+    
+    const { data: admin } = await supabaseAdmin
+      .from('users')
+      .select('id, email, username, created_at')
+      .eq('role', 'admin')
+      .single();
+    
+    res.json({
+      databaseConfigured: true,
+      adminExists: !!admin,
+      admin: admin ? {
+        email: admin.email,
+        username: admin.username,
+        createdAt: admin.created_at
+      } : null,
+      envVarsSet: {
+        ADMIN_EMAIL: !!process.env.ADMIN_EMAIL,
+        ADMIN_PASSWORD: !!process.env.ADMIN_PASSWORD,
+        ADMIN_PHONE: !!process.env.ADMIN_PHONE,
+        ADMIN_USERNAME: !!process.env.ADMIN_USERNAME
+      }
+    });
+    
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to check admin status', details: error.message });
+  }
+});
+
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
