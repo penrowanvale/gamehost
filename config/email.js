@@ -1,11 +1,16 @@
 const nodemailer = require('nodemailer');
 
 // Get configurable values from environment
+// Uses existing admin variables as fallbacks for convenience
 const getConfig = () => ({
+  // ADMIN_EMAIL is already used for admin login, so we reuse it for notifications
   adminEmail: process.env.ADMIN_EMAIL || 'admin@example.com',
-  supportEmail: process.env.SUPPORT_EMAIL || 'support@example.com',
-  supportWhatsApp: process.env.SUPPORT_WHATSAPP || '+919876543210',
-  appName: process.env.APP_NAME || 'GameBlast Mobile',
+  // SUPPORT_EMAIL can be different from admin email (public-facing)
+  supportEmail: process.env.SUPPORT_EMAIL || process.env.ADMIN_EMAIL || 'support@example.com',
+  // ADMIN_PHONE can be used as WhatsApp number if SUPPORT_WHATSAPP not set
+  supportWhatsApp: process.env.SUPPORT_WHATSAPP || process.env.ADMIN_PHONE || '+919876543210',
+  // APP_NAME or PLATFORM_NAME (used in create-admin.js)
+  appName: process.env.APP_NAME || process.env.PLATFORM_NAME || 'GameBlast Mobile',
   appUrl: process.env.APP_URL || 'https://example.com',
   supportHours: process.env.SUPPORT_HOURS || '9 AM - 9 PM IST'
 });
