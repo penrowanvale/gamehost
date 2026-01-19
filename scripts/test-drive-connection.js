@@ -1,3 +1,6 @@
+// Load environment variables
+require('dotenv').config();
+
 const { GoogleDriveStorage } = require('../config/google-drive-storage');
 const fs = require('fs');
 const path = require('path');
