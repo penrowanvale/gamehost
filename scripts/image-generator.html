@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Generator</title>
+</head>
+<body>
+    <canvas id="canvas" width="512" height="512"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        function createIcon(size, text) {
+            canvas.width = size;
+            canvas.height = size;
+
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#ff6b35');
+            gradient.addColorStop(1, '#f7931e');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, size * 0.1);
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size * 0.3}px Arial, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, size / 2, size / 2);
+            
+            return canvas.toDataURL('image/png');
+        }
+
+        function createGameImage() {
+            canvas.width = 400;
+            canvas.height = 600;
+
+            const gradient = ctx.createLinearGradient(0, 0, 400, 600);
+            gradient.addColorStop(0, '#1a1a2e');
+            gradient.addColorStop(1, '#16213e');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 400, 600);
+
+            ctx.fillStyle = '#ff6b35';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('GAME', 200, 250);
+            
+            ctx.fillStyle = '#ffd23f';
+            ctx.font = '24px Arial';
+            ctx.fillText('Coming Soon', 200, 300);
+
+            for (let i = 0; i < 20; i++) {
+                ctx.fillStyle = `rgba(255, 210, 63, ${Math.random() * 0.5})`;
+                ctx.beginPath();
+                ctx.arc(Math.random() * 400, Math.random() * 600, Math.random() * 10, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            return canvas.toDataURL('image/jpeg', 0.8);
+        }
+        
+        console.log('Generated images - copy these data URLs to create actual image files:');
+        console.log('Icon 192:', createIcon(192, 'GB'));
+        console.log('Icon 512:', createIcon(512, 'GB'));
+        console.log('Default Game:', createGameImage());
+    </script>
+</body>
+</html>

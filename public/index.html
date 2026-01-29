@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameBlast Mobile - Ultimate Mobile Gaming Experience</title>
+    <meta name="description" content="Join the ultimate mobile gaming platform with Tambola, number games and more. Play, win prizes, and compete with players worldwide.">
+    <meta name="keywords" content="mobile games, tambola, online gaming, prizes, competitions">
+
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GameBlast Mobile">
+
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link rel="preload" href="/js/app.js" as="script">
+</head>
+<body>
+    
+    <div class="disclaimer-banner">
+        <div class="container">
+            <span class="disclaimer-text">This platform is a SaaS service. We are not responsible for any monetary losses. Play responsibly.</span>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">GameBlast Mobile</div>
+                
+                <nav class="nav-menu" id="navMenu">
+                    <a href="/">Home</a>
+                    <a href="/games">Games</a>
+                    <a href="/dashboard" class="user-only-nav" style="display: none;">Dashboard</a>
+                    <a href="/how-to-play">How to Play</a>
+                    <a href="/leaderboard">Leaderboard</a>
+                    <a href="/organiser">Organiser</a>
+                </nav>
+                
+                <div class="user-menu">
+                    <div id="authButtons">
+                        <a href="/login" class="btn btn-secondary">Login</a>
+                    </div>
+                    <div id="userMenu" style="display: none;"></div>
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="news-banner" id="newsBanner" style="display: none;">
+        <div class="container">
+            <div class="news-ticker"></div>
+        </div>
+    </div>
+
+    <div class="ad-section">
+        <div class="ad-placeholder">Advertisement Space</div>
+    </div>
+
+    <section class="sponsored-ads" id="sponsoredAds" style="display: none;">
+        <div class="container">
+            <div class="ads-grid"></div>
+        </div>
+    </section>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Ultimate Mobile Gaming Experience</h1>
+                <p class="platform-tagline">Join thousands of players in exciting games and win amazing prizes!</p>
+                <div class="hero-buttons">
+                    <a href="/games" class="btn btn-primary">Play Games</a>
+                    <a href="/leaderboard" class="btn btn-secondary">View Leaderboard</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="ad-section">
+        <div class="ad-placeholder">Advertisement Space</div>
+    </div>
+
+    <section class="game-section">
+        <div class="container">
+            <h2 class="section-title">Featured Games</h2>
+            <div class="game-carousel" id="featuredGames">
+                <button class="carousel-nav carousel-prev">‹</button>
+                <div class="game-grid">
+                    
+                </div>
+                <button class="carousel-nav carousel-next">›</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="ad-section">
+        <div class="ad-placeholder">Advertisement Space</div>
+    </div>
+
+    <section class="game-section">
+        <div class="container">
+            <h2 class="section-title">Top Games</h2>
+            <div class="game-carousel" id="topGames">
+                <button class="carousel-nav carousel-prev">‹</button>
+                <div class="game-grid">
+                    
+                </div>
+                <button class="carousel-nav carousel-next">›</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="ad-section">
+        <div class="ad-placeholder">Advertisement Space</div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="logo">GameBlast Mobile</h3>
+                    <p class="platform-tagline">Your Ultimate Mobile Gaming Experience</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/games">Games</a></li>
+                        <li><a href="/how-to-play">How to Play</a></li>
+                        <li><a href="/leaderboard">Leaderboard</a></li>
+                        <li><a href="/organiser">Become Organiser</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="/privacy-policy">Privacy Policy</a></li>
+                        <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                        <li><a href="/disclaimer">Disclaimer</a></li>
+                        <li><a href="/refund-policy">Refund Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <ul>
+                        <li><a href="mailto:support@gameblast.in">Support</a></li>
+                        <li><a href="/contact">Contact Us</a></li>
+                        <li><a href="/help">Help Center</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 GameBlast Mobile. All rights reserved. | Designed for mobile-first gaming experience.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

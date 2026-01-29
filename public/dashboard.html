@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard - GameBlast Mobile</title>
+    <meta name="description" content="View your game participations and notifications on GameBlast Mobile.">
+
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">GameBlast Mobile</a>
+                
+                <nav class="nav-menu" id="navMenu">
+                    <a href="/">Home</a>
+                    <a href="/games">Games</a>
+                    <a href="/dashboard" class="active">Dashboard</a>
+                    <a href="/leaderboard">Leaderboard</a>
+                </nav>
+                
+                <div class="user-menu">
+                    <div id="authButtons">
+                        <a href="/login" class="btn btn-secondary">Login</a>
+                    </div>
+                    <div id="userMenu" style="display: none;"></div>
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="login-required-screen" id="loginRequiredScreen">
+        <div class="container">
+            <div class="login-required-content">
+                <h1>Login Required</h1>
+                <p>Please login to view your dashboard and game participations.</p>
+                <div class="login-options">
+                    <a href="/login" class="btn btn-primary">Login Now</a>
+                    <a href="/" class="btn btn-secondary">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="user-dashboard" id="userDashboard" style="display: none;">
+
+        <section class="dashboard-header">
+            <div class="container">
+                <div class="dashboard-welcome">
+                    <h1>Welcome back, <span id="userName">User</span>!</h1>
+                    <p>Manage your game participations and track your progress</p>
+                </div>
+
+                <div class="quick-stats">
+                    <div class="stat-item">
+                        <div class="stat-icon">🎮</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="totalParticipations">0</div>
+                            <div class="stat-label">Games Joined</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="approvedParticipations">0</div>
+                            <div class="stat-label">Approved</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="pendingParticipations">0</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="totalWins">0</div>
+                            <div class="stat-label">Wins</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="ad-section">
+            <div class="ad-placeholder">Advertisement Space</div>
+        </div>
+
+        <section class="notifications-section" id="notificationsSection">
+            <div class="container">
+                <h2>🔔 Recent Notifications</h2>
+                <div class="notifications-list" id="notificationsList">
+                    
+                </div>
+            </div>
+        </section>
+
+        <section class="my-games-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>🎯 My Game Participations</h2>
+                    <div class="section-filters">
+                        <select id="participationFilter" class="filter-select">
+                            <option value="all">All Games</option>
+                            <option value="pending">Pending Approval</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="participations-grid" id="participationsGrid">
+                    
+                </div>
+
+                <div class="no-participations" id="noParticipations" style="display: none;">
+                    <div class="no-content">
+                        <h3>🎮 No Game Participations Yet</h3>
+                        <p>Join your first game and start winning!</p>
+                        <a href="/games" class="btn btn-primary">Browse Games</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="ad-section">
+            <div class="ad-placeholder">Advertisement Space</div>
+        </div>
+    </div>
+
+    <div id="downloadModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDownloadModal()">&times;</span>
+            <div class="download-modal-content">
+                <h2>📥 Download Your Sheets</h2>
+                <div id="downloadModalBody">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="logo">GameBlast Mobile</h3>
+                    <p class="platform-tagline">Your Ultimate Mobile Gaming Experience</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/games">Games</a></li>
+                        <li><a href="/dashboard">Dashboard</a></li>
+                        <li><a href="/leaderboard">Leaderboard</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 GameBlast Mobile. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+# Image Placeholders
+
+This directory should contain the following images for the GameBlast Mobile platform:
+
+## Required Images:
+
+### Icons and Branding
+- favicon.ico (32x32px) - Browser favicon
+- apple-touch-icon.png (180x180px) - iOS home screen icon
+- icon-192.png (192x192px) - PWA icon
+- icon-512.png (512x512px) - PWA icon
+- logo.png - Platform logo (various sizes)
+
+### Default Images
+- default-game.jpg - Default game banner (400x600px portrait)
+- default-organiser.jpg - Default organiser avatar (200x200px)
+- default-user.jpg - Default user avatar (200x200px)
+
+### Hero Section
+- hero-bg.jpg - Hero section background (1920x1080px)
+- hero-mobile.jpg - Mobile hero background (800x600px)
+
+### Sample Game Images
+- tambola-game.jpg - Sample Tambola game banner
+- number-game.jpg - Sample number game banner
+- bingo-game.jpg - Sample bingo game banner
+
+### Promotional
+- featured-badge.png - Featured game badge
+- new-badge.png - New game badge
+- hot-badge.png - Popular game badge
+
+## Image Guidelines:
+
+### Format Requirements
+- Use WebP format when possible for better compression
+- Provide fallback JPG/PNG for older browsers
+- Optimize all images for web (compress without quality loss)
+
+### Size Guidelines
+- Game banners: 400x600px (portrait A4 style)
+- User avatars: 200x200px (square)
+- Promotional banners: 800x200px (landscape)
+- Background images: 1920x1080px (full HD)
+
+### Mobile Optimization
+- Provide @2x versions for high-DPI displays
+- Use responsive images with srcset attribute
+- Lazy load images below the fold
+
+### Accessibility
+- Include alt text for all images
+- Use descriptive filenames
+- Ensure good contrast for text overlays
+
+## Implementation Notes:
+
+1. Replace this placeholder file with actual images
+2. Update image paths in HTML/CSS files
+3. Implement lazy loading for better performance
+4. Add image optimization pipeline for production
+5. Consider using a CDN for image delivery
+
+## Sample Image Sources:
+
+For development/testing, you can use:
+- Unsplash.com for stock photos
+- Placeholder.com for temporary placeholders
+- Canva.com for creating promotional graphics
+- Figma for designing icons and logos
+
+Remember to use only royalty-free images or create original content for production use.

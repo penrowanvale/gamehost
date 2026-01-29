@@ -1,0 +1,396 @@
+.page-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  padding: 60px 0;
+  text-align: center;
+  color: white;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.page-header p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.how-to-play-content {
+  padding: 60px 0;
+}
+
+.instruction-section {
+  margin-bottom: 60px;
+  background: var(--card-bg);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 107, 53, 0.2);
+}
+
+.instruction-header {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  padding: 30px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  color: white;
+}
+
+.step-number {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.instruction-header h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.instruction-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+  padding: 40px;
+}
+
+.instruction-text h3 {
+  color: var(--accent-color);
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.instruction-text ul {
+  list-style: none;
+  margin-bottom: 25px;
+}
+
+.instruction-text li {
+  margin-bottom: 12px;
+  color: var(--text-light);
+  position: relative;
+  padding-left: 25px;
+  line-height: 1.6;
+}
+
+.instruction-text li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--success-color);
+  font-weight: bold;
+}
+
+.instruction-text ul ul {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+.instruction-text ul ul li {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.instruction-text ul ul li::before {
+  content: '→';
+  color: var(--primary-color);
+}
+
+.tip, .warning, .info {
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+  border-left: 4px solid;
+}
+
+.tip {
+  background: rgba(40, 167, 69, 0.1);
+  border-color: var(--success-color);
+  color: var(--text-light);
+}
+
+.warning {
+  background: rgba(220, 53, 69, 0.1);
+  border-color: var(--danger-color);
+  color: var(--text-light);
+}
+
+.info {
+  background: rgba(255, 193, 7, 0.1);
+  border-color: var(--warning-color);
+  color: var(--text-light);
+}
+
+.tip ul, .warning ul, .info ul {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+.tip li, .warning li, .info li {
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.instruction-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.visual-placeholder {
+  background: rgba(26, 26, 46, 0.5);
+  border: 2px dashed rgba(255, 107, 53, 0.3);
+  border-radius: 15px;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  width: 100%;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.faq-section {
+  background: var(--card-bg);
+  padding: 50px;
+  border-radius: 20px;
+  margin: 60px 0;
+  border: 1px solid rgba(255, 107, 53, 0.2);
+}
+
+.faq-section h2 {
+  text-align: center;
+  color: var(--text-light);
+  font-size: 2rem;
+  margin-bottom: 40px;
+}
+
+.faq-item {
+  border-bottom: 1px solid rgba(255, 107, 53, 0.2);
+  margin-bottom: 20px;
+}
+
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.faq-question:hover {
+  color: var(--accent-color);
+}
+
+.faq-question h4 {
+  color: var(--text-light);
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.faq-toggle {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.faq-item.active .faq-toggle {
+  transform: rotate(45deg);
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  padding: 0 0 0 0;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 200px;
+  padding: 0 0 20px 0;
+}
+
+.faq-answer p {
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.support-section {
+  text-align: center;
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(247, 147, 30, 0.1));
+  padding: 50px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 107, 53, 0.2);
+}
+
+.support-section h2 {
+  color: var(--text-light);
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.support-section p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+}
+
+.support-options {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.support-btn {
+  background: var(--primary-color);
+  color: white;
+  padding: 15px 30px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.support-btn:hover {
+  background: var(--secondary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 107, 53, 0.4);
+}
+
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 2rem;
+  }
+  
+  .page-header p {
+    font-size: 1rem;
+  }
+  
+  .instruction-header {
+    padding: 20px;
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+  
+  .step-number {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+  
+  .instruction-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .instruction-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 30px 20px;
+  }
+  
+  .instruction-text h3 {
+    font-size: 1.2rem;
+  }
+  
+  .visual-placeholder {
+    min-height: 150px;
+    padding: 30px 15px;
+    font-size: 1rem;
+  }
+  
+  .faq-section {
+    padding: 30px 20px;
+  }
+  
+  .faq-section h2 {
+    font-size: 1.6rem;
+  }
+  
+  .support-section {
+    padding: 30px 20px;
+  }
+  
+  .support-section h2 {
+    font-size: 1.6rem;
+  }
+  
+  .support-options {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .support-btn {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .how-to-play-content {
+    padding: 40px 0;
+  }
+  
+  .instruction-section {
+    margin-bottom: 40px;
+  }
+  
+  .instruction-header {
+    padding: 15px;
+  }
+  
+  .instruction-content {
+    padding: 20px 15px;
+  }
+  
+  .faq-section {
+    padding: 20px 15px;
+  }
+  
+  .support-section {
+    padding: 20px 15px;
+  }
+}
+
+.instruction-section {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.instruction-section:nth-child(1) { animation-delay: 0.1s; }
+.instruction-section:nth-child(2) { animation-delay: 0.2s; }
+.instruction-section:nth-child(3) { animation-delay: 0.3s; }
+.instruction-section:nth-child(4) { animation-delay: 0.4s; }
+.instruction-section:nth-child(5) { animation-delay: 0.5s; }
+.instruction-section:nth-child(6) { animation-delay: 0.6s; }
+.instruction-section:nth-child(7) { animation-delay: 0.7s; }

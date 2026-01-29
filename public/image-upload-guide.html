@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload Guide - GameBlast Mobile</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .guide-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+        }
+        .method-card {
+            background: rgba(255, 107, 53, 0.05);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .method-title {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .pros, .cons {
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .pros {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        .cons {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+        .example-url {
+            background: var(--dark-bg);
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+        .correct { color: #4caf50; }
+        .incorrect { color: #f44336; }
+        .step-list {
+            counter-reset: step-counter;
+        }
+        .step-list li {
+            counter-increment: step-counter;
+            margin: 10px 0;
+            padding-left: 10px;
+            position: relative;
+        }
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: -25px;
+            top: 0;
+            background: var(--primary-color);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="guide-container">
+        <h1>📂 Google Drive Image Upload Guide</h1>
+        <p>Learn how to upload banner images and QR codes using Google Drive (free and saves our storage space!).</p>
+
+        <div class="method-card">
+            <div class="method-title">📂 Google Drive Image Upload (Only Method)</div>
+            <p>Use Google Drive to host your images - it's free, reliable, and saves our server storage space!</p>
+            
+            <h4>Step-by-Step Guide:</h4>
+            <ol class="step-list">
+                <li><strong>Go to Google Drive:</strong> Open <a href="https://drive.google.com" target="_blank">drive.google.com</a> in a new tab</li>
+                <li><strong>Upload Your Image:</strong> Drag & drop or click "New" → "File upload"</li>
+                <li><strong>Right-click the uploaded image</strong> → Select "Get link"</li>
+                <li><strong>Change Permissions:</strong> Click "Change to anyone with the link" → Select "Viewer"</li>
+                <li><strong>Copy the Link:</strong> Click "Copy link" button</li>
+                <li><strong>Paste in Our Form:</strong> Paste the link in our image upload widget</li>
+                <li><strong>Convert:</strong> Click "🔄 Convert to Direct Link" button</li>
+                <li><strong>Test:</strong> Click "🔍 Test Image" to verify it works</li>
+                <li><strong>Use:</strong> Click "✅ Use This URL" to add it to your game</li>
+            </ol>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>✅ Why Google Drive?</h4>
+                    <ul>
+                        <li>Completely free with Google account</li>
+                        <li>15GB free storage space</li>
+                        <li>Reliable Google infrastructure</li>
+                        <li>No cost to our platform</li>
+                        <li>Easy file management</li>
+                        <li>Automatic conversion by our system</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h4>⚠️ Important Notes:</h4>
+                    <ul>
+                        <li>Must set permissions correctly</li>
+                        <li>Wait 2-3 minutes after changing permissions</li>
+                        <li>Use the sharing URL, not direct file URL</li>
+                        <li>Test the image before using</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="method-card">
+            <div class="method-title">🔍 URL Format Examples</div>
+            <p>Understanding the difference between sharing URLs and direct URLs.</p>
+            
+            <h4>Your Google Drive URL (what you copy):</h4>
+            <div class="example-url incorrect">
+                📋 Sharing URL: https://drive.google.com/file/d/1ehK_XHZCvoA4or78h4N7-6dkTwEQq66e/view?usp=sharing
+            </div>
+            
+            <h4>What our system converts it to:</h4>
+            <div class="example-url correct">
+                🔗 Direct URL: https://drive.google.com/uc?export=view&id=1ehK_XHZCvoA4or78h4N7-6dkTwEQq66e
+            </div>
+            
+            <div style="background: rgba(255, 193, 7, 0.1); padding: 15px; border-radius: 8px; margin-top: 15px;">
+                <h4 style="color: #ffc107; margin: 0 0 10px 0;">💡 Key Point:</h4>
+                <p style="margin: 0; color: var(--text-muted);">
+                    You don't need to manually convert URLs! Our system automatically converts your Google Drive sharing URL 
+                    to the direct image URL. Just paste your sharing URL and click "Convert to Direct Link".
+                </p>
+            </div>
+        </div>
+
+        <div class="method-card">
+            <div class="method-title">📋 Image Requirements</div>
+            
+            <h4>Banner Images:</h4>
+            <ul>
+                <li><strong>Size:</strong> 400x600px (portrait A4 style)</li>
+                <li><strong>Format:</strong> JPG, PNG, WebP</li>
+                <li><strong>File Size:</strong> Under 5MB</li>
+                <li><strong>Content:</strong> Game name, prize amount, attractive design</li>
+            </ul>
+
+            <h4>QR Code Images:</h4>
+            <ul>
+                <li><strong>Size:</strong> 300x300px minimum</li>
+                <li><strong>Format:</strong> JPG, PNG</li>
+                <li><strong>Content:</strong> UPI payment QR code</li>
+                <li><strong>Quality:</strong> High contrast, clear scanning</li>
+            </ul>
+        </div>
+
+        <div class="method-card">
+            <div class="method-title">⚠️ Common Issues & Solutions</div>
+            
+            <h4>Image Not Displaying:</h4>
+            <ul>
+                <li>Check if URL is a direct image link (ends with .jpg, .png, etc.)</li>
+                <li>Ensure image is publicly accessible</li>
+                <li>Try opening the URL in a new browser tab</li>
+                <li>Use our built-in validator in the "🔗 Image URL" tab</li>
+            </ul>
+
+            <h4>Google Drive Issues:</h4>
+            <ul>
+                <li>Make sure permissions are set to "Anyone with the link can view"</li>
+                <li>Use our converter tool instead of the raw sharing URL</li>
+                <li>Wait a few minutes after changing permissions</li>
+            </ul>
+
+            <h4>Upload Failures:</h4>
+            <ul>
+                <li>Check your internet connection</li>
+                <li>Ensure file size is under 5MB</li>
+                <li>Try a different image format (JPG works best)</li>
+                <li>Refresh the page and try again</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/organiser" class="btn btn-primary">← Back to Organiser Panel</a>
+        </div>
+    </div>
+</body>
+</html>

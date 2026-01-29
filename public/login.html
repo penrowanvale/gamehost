@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - GameBlast Mobile</title>
+    <meta name="description" content="Login to your GameBlast Mobile account and start playing amazing games.">
+
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+    
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">GameBlast Mobile</a>
+                <a href="/" class="btn btn-secondary">← Back to Home</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="auth-section">
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-toggle">
+                    <button class="toggle-btn active" data-type="user">User Login</button>
+                    <button class="toggle-btn" data-type="organiser">Organiser Login</button>
+                    <button class="toggle-btn" data-type="admin">Admin Login</button>
+                </div>
+
+                <div class="auth-form active" id="userLoginForm">
+                    <h2>User Login</h2>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="userIdentifier">Email or Phone Number</label>
+                            <input type="text" id="userIdentifier" name="identifier" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="userPassword">Password</label>
+                            <input type="password" id="userPassword" name="password" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full">Login</button>
+                    </form>
+                    
+                    <div class="auth-links">
+                        <p>Don't have an account? <a href="#" onclick="showSignupForm('user')">Sign Up</a></p>
+                        <p><a href="#" onclick="showForgotPassword()">Forgot Password?</a></p>
+                    </div>
+                </div>
+
+                <div class="auth-form" id="organiserLoginForm">
+                    <h2>Organiser Login</h2>
+                    <form id="organiserLoginFormElement">
+                        <div class="form-group">
+                            <label for="organiserIdentifier">Email or Phone Number</label>
+                            <input type="text" id="organiserIdentifier" name="identifier" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="organiserPassword">Password</label>
+                            <input type="password" id="organiserPassword" name="password" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full">Login</button>
+                    </form>
+                    
+                    <div class="auth-links">
+                        <p>Don't have an account? <a href="#" onclick="showSignupForm('organiser')">Register as Organiser</a></p>
+                    </div>
+                </div>
+
+                <div class="auth-form" id="adminLoginForm">
+                    <h2>Admin Login</h2>
+                    <form id="adminLoginFormElement">
+                        <div class="form-group">
+                            <label for="adminIdentifier">Email or Phone Number</label>
+                            <input type="text" id="adminIdentifier" name="identifier" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="adminPassword">Password</label>
+                            <input type="password" id="adminPassword" name="password" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSignupModal()">&times;</span>
+
+            <div id="userSignupForm" class="signup-form">
+                <h2>User Registration</h2>
+                <form id="userSignupFormElement">
+                    <div class="form-group">
+                        <label for="signupUsername">Username</label>
+                        <input type="text" id="signupUsername" name="username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupEmail">Email</label>
+                        <input type="email" id="signupEmail" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupPhone">Mobile Number</label>
+                        <input type="tel" id="signupPhone" name="phone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" name="password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="userTerms" required>
+                            I agree to the <a href="/terms-conditions" target="_blank">Terms & Conditions</a>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">Register</button>
+                </form>
+            </div>
+
+            <div id="organiserSignupForm" class="signup-form">
+                <h2>Organiser Registration</h2>
+                <div class="organiser-fee-notice">
+                    <strong>₹2,500 per month</strong> will be charged after accepting your request
+                </div>
+                
+                <form id="organiserSignupFormElement">
+                    <div class="form-group">
+                        <label for="orgSignupUsername">Username</label>
+                        <input type="text" id="orgSignupUsername" name="username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="orgRealName">Real Name</label>
+                        <input type="text" id="orgRealName" name="realName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="orgOrganiserName">Organiser Name (Display Name)</label>
+                        <input type="text" id="orgOrganiserName" name="organiserName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="orgSignupEmail">Email</label>
+                        <input type="email" id="orgSignupEmail" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="orgPersonalPhone">Personal Mobile Number</label>
+                        <input type="tel" id="orgPersonalPhone" name="personalPhone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="orgSignupPhone">Business Mobile Number</label>
+                        <input type="tel" id="orgSignupPhone" name="phone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="orgSignupPassword">Password</label>
+                        <input type="password" id="orgSignupPassword" name="password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="orgConfirmPassword">Confirm Password</label>
+                        <input type="password" id="orgConfirmPassword" name="confirmPassword" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aadhaarFront">Aadhaar Card Front (Image URL)</label>
+                        <input type="url" id="aadhaarFront" name="aadhaarFrontUrl" required>
+                        <small>Please upload your Aadhaar front image to a cloud service and paste the URL</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aadhaarBack">Aadhaar Card Back (Image URL)</label>
+                        <input type="url" id="aadhaarBack" name="aadhaarBackUrl" required>
+                        <small>Please upload your Aadhaar back image to a cloud service and paste the URL</small>
+                    </div>
+                    
+                    <div class="verification-notice">
+                        <p><strong>Important:</strong> Please enter all information carefully. Admin will verify all data before accepting your request.</p>
+                        <p><strong>Monthly Fee:</strong> ₹2,500 per month for organiser panel access.</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="organiserTerms" required>
+                            I agree to the <a href="/terms-conditions" target="_blank">Terms & Conditions</a> and monthly fee structure
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-full">Request Registration</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/auth.js"></script>
+</body>
+</html>

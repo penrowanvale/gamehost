@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games - GameBlast Mobile</title>
+    <meta name="description" content="Browse and join exciting games on GameBlast Mobile. Win amazing prizes in Tambola and number games.">
+
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/games.css">
+</head>
+<body>
+    
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">GameBlast Mobile</a>
+                
+                <nav class="nav-menu" id="navMenu">
+                    <a href="/">Home</a>
+                    <a href="/games" class="active">Games</a>
+                    <a href="/how-to-play">How to Play</a>
+                    <a href="/leaderboard">Leaderboard</a>
+                    <a href="/organiser">Organiser</a>
+                </nav>
+                
+                <div class="user-menu">
+                    <div id="authButtons">
+                        <a href="/login" class="btn btn-secondary">Login</a>
+                    </div>
+                    <div id="userMenu" style="display: none;"></div>
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <div class="container">
+            <h1>Today's Games</h1>
+            <p>Join exciting games and win amazing prizes!</p>
+        </div>
+    </section>
+
+    <div class="ad-section">
+        <div class="ad-placeholder">Advertisement Space</div>
+    </div>
+
+    <section class="filters-section">
+        <div class="container">
+            <div class="filters">
+                <button class="filter-btn active" data-status="all">All Games</button>
+                <button class="filter-btn" data-status="upcoming">Upcoming</button>
+                <button class="filter-btn" data-status="live">Live Now</button>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="searchGames" placeholder="Search games...">
+                <button class="search-btn">🔍</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="games-section">
+        <div class="container">
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="loading"></div>
+                <p>Loading games...</p>
+            </div>
+            
+            <div class="games-grid" id="gamesGrid">
+                
+            </div>
+            
+            <div class="no-games" id="noGames" style="display: none;">
+                <div class="no-games-content">
+                    <h3>No Games Found</h3>
+                    <p>There are no games matching your criteria. Check back later!</p>
+                    <a href="/" class="btn btn-primary">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="ad-section">
+        <div class="ad-placeholder">Advertisement Space</div>
+    </div>
+
+    <div id="gameModal" class="modal">
+        <div class="modal-content game-modal-content">
+            <span class="close" onclick="closeGameModal()">&times;</span>
+            <div id="gameModalContent">
+                
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="logo">GameBlast Mobile</h3>
+                    <p class="platform-tagline">Your Ultimate Mobile Gaming Experience</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/games">Games</a></li>
+                        <li><a href="/how-to-play">How to Play</a></li>
+                        <li><a href="/leaderboard">Leaderboard</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="/privacy-policy">Privacy Policy</a></li>
+                        <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                        <li><a href="/disclaimer">Disclaimer</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 GameBlast Mobile. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/games.js"></script>
+</body>
+</html>

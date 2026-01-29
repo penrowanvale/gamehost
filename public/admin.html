@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - GameBlast Mobile</title>
+    <meta name="description" content="Admin dashboard for managing GameBlast Mobile platform.">
+
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">GameBlast Mobile</a>
+                
+                <div class="admin-header-info">
+                    <span class="admin-badge">Admin Panel</span>
+                    <div class="user-menu">
+                        <div id="userMenu"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="admin-required-screen" id="adminRequiredScreen">
+        <div class="container">
+            <div class="admin-required-content">
+                <h1>🔐 Admin Access Required</h1>
+                <p>You need administrator privileges to access this panel.</p>
+                <div class="admin-options">
+                    <a href="/login" class="btn btn-primary">Login as Admin</a>
+                    <a href="/" class="btn btn-secondary">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-dashboard" id="adminDashboard" style="display: none;">
+
+        <div class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <h3>🛠️ Admin Panel</h3>
+                <button class="sidebar-toggle" id="adminSidebarToggle">☰</button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-section="users">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-text">Users</span>
+                </a>
+                <a href="#" class="nav-item" data-section="organisers">
+                    <span class="nav-icon">🎯</span>
+                    <span class="nav-text">Organisers</span>
+                </a>
+                <a href="#" class="nav-item" data-section="games">
+                    <span class="nav-icon">🎮</span>
+                    <span class="nav-text">Games</span>
+                </a>
+                <a href="#" class="nav-item" data-section="featured">
+                    <span class="nav-icon">⭐</span>
+                    <span class="nav-text">Featured Games</span>
+                </a>
+                <a href="#" class="nav-item" data-section="ads">
+                    <span class="nav-icon">📢</span>
+                    <span class="nav-text">Sponsored Ads</span>
+                </a>
+                <a href="#" class="nav-item" data-section="news">
+                    <span class="nav-icon">📰</span>
+                    <span class="nav-text">News Banner</span>
+                </a>
+                <a href="#" class="nav-item" data-section="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-text">Settings</span>
+                </a>
+                <a href="#" class="nav-item" data-section="analytics">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-text">Analytics</span>
+                </a>
+            </nav>
+        </div>
+
+        <button class="mobile-sidebar-toggle" id="mobileAdminSidebarToggle">☰</button>
+
+        <div class="sidebar-backdrop" id="adminSidebarBackdrop"></div>
+
+        <div class="admin-main-content">
+
+            <div class="admin-content-section active" id="dashboard-section">
+                <div class="section-header">
+                    <h1>📊 Admin Dashboard</h1>
+                    <p>Platform overview and key metrics</p>
+                </div>
+
+                <div class="admin-stats-grid">
+                    <div class="admin-stat-card users">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="totalUsers">0</div>
+                            <div class="stat-label">Total Users</div>
+                        </div>
+                        <div class="stat-trend">+12% this month</div>
+                    </div>
+                    
+                    <div class="admin-stat-card organisers">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="totalOrganisers">0</div>
+                            <div class="stat-label">Active Organisers</div>
+                        </div>
+                        <div class="stat-trend">+5% this month</div>
+                    </div>
+                    
+                    <div class="admin-stat-card games">
+                        <div class="stat-icon">🎮</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="totalGames">0</div>
+                            <div class="stat-label">Total Games</div>
+                        </div>
+                        <div class="stat-trend">+25% this month</div>
+                    </div>
+                    
+                    <div class="admin-stat-card revenue">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="platformRevenue">₹0</div>
+                            <div class="stat-label">Platform Revenue</div>
+                        </div>
+                        <div class="stat-trend">+18% this month</div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h3>Quick Actions</h3>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="adminManager.switchSection('organisers')">
+                            <span class="action-icon">✅</span>
+                            <span>Approve Organisers</span>
+                            <span class="action-count" id="pendingOrganisers">0</span>
+                        </button>
+                        <button class="action-btn" onclick="adminManager.switchSection('featured')">
+                            <span class="action-icon">⭐</span>
+                            <span>Manage Featured</span>
+                        </button>
+                        <button class="action-btn" onclick="adminManager.switchSection('ads')">
+                            <span class="action-icon">📢</span>
+                            <span>Update Ads</span>
+                        </button>
+                        <button class="action-btn" onclick="adminManager.exportAllData()">
+                            <span class="action-icon">📊</span>
+                            <span>Export Data</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="admin-widgets">
+                    <div class="admin-widget">
+                        <div class="widget-header">
+                            <h3>Recent Registrations</h3>
+                            <a href="#" onclick="adminManager.switchSection('users')">View All</a>
+                        </div>
+                        <div class="widget-content" id="recentUsersWidget">
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="admin-widget">
+                        <div class="widget-header">
+                            <h3>Pending Approvals</h3>
+                            <a href="#" onclick="adminManager.switchSection('organisers')">View All</a>
+                        </div>
+                        <div class="widget-content" id="pendingApprovalsWidget">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-content-section" id="users-section">
+                <div class="section-header">
+                    <h1>👥 User Management</h1>
+                    <p>Manage all platform users</p>
+                </div>
+
+                <div class="admin-table-container">
+                    <div class="table-controls">
+                        <div class="search-filters">
+                            <input type="text" id="userSearch" placeholder="Search users..." class="search-input">
+                            <select id="userRoleFilter" class="filter-select">
+                                <option value="all">All Roles</option>
+                                <option value="user">Users</option>
+                                <option value="organiser">Organisers</option>
+                                <option value="admin">Admins</option>
+                            </select>
+                        </div>
+                        <div class="table-actions">
+                            <button class="btn btn-secondary" onclick="adminManager.exportData('users')">
+                                📊 Export Users
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="data-table-wrapper">
+                        <table class="admin-data-table" id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-content-section" id="organisers-section">
+                <div class="section-header">
+                    <h1>🎯 Organiser Management</h1>
+                    <p>Approve and manage organisers</p>
+                </div>
+
+                <div class="admin-table-container">
+                    <div class="table-controls">
+                        <div class="search-filters">
+                            <select id="organiserStatusFilter" class="filter-select">
+                                <option value="all">All Status</option>
+                                <option value="pending">Pending Approval</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <div class="table-actions">
+                            <button class="btn btn-secondary" onclick="adminManager.exportData('organisers')">
+                                📊 Export Organisers
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="data-table-wrapper">
+                        <table class="admin-data-table" id="organisersTable">
+                            <thead>
+                                <tr>
+                                    <th>Real Name</th>
+                                    <th>Organiser Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Applied</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="organisersTableBody">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-content-section" id="games-section">
+                <div class="section-header">
+                    <h1>🎮 Games Management</h1>
+                    <p>Monitor and manage all games</p>
+                </div>
+
+                <div class="admin-table-container">
+                    <div class="table-controls">
+                        <div class="search-filters">
+                            <input type="text" id="gameSearch" placeholder="Search games..." class="search-input">
+                            <select id="gameStatusFilter" class="filter-select">
+                                <option value="all">All Status</option>
+                                <option value="upcoming">Upcoming</option>
+                                <option value="live">Live</option>
+                                <option value="ended">Ended</option>
+                            </select>
+                        </div>
+                        <div class="table-actions">
+                            <button class="btn btn-secondary" onclick="adminManager.exportData('games')">
+                                📊 Export Games
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="data-table-wrapper">
+                        <table class="admin-data-table" id="gamesTable">
+                            <thead>
+                                <tr>
+                                    <th>Game Name</th>
+                                    <th>Organiser</th>
+                                    <th>Date</th>
+                                    <th>Prize Pool</th>
+                                    <th>Participants</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gamesTableBody">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-content-section" id="featured-section">
+                <div class="section-header">
+                    <h1>⭐ Featured Games Management</h1>
+                    <p>Control homepage game promotions</p>
+                </div>
+
+                <div class="featured-container">
+                    <div class="featured-controls">
+                        <div class="control-tabs">
+                            <button class="tab-btn active" data-tab="featured">Featured Games</button>
+                            <button class="tab-btn" data-tab="top">Top Games</button>
+                        </div>
+                    </div>
+
+                    <div class="tab-content active" id="featured-tab">
+                        <div class="featured-list" id="featuredGamesList">
+                            
+                        </div>
+                        <button class="btn btn-primary" onclick="adminManager.showAddFeaturedModal('featured')">
+                            ➕ Add Featured Game
+                        </button>
+                    </div>
+
+                    <div class="tab-content" id="top-tab">
+                        <div class="featured-list" id="topGamesList">
+                            
+                        </div>
+                        <button class="btn btn-primary" onclick="adminManager.showAddFeaturedModal('top')">
+                            ➕ Add Top Game
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-content-section" id="ads-section">
+                <div class="section-header">
+                    <h1>📢 Sponsored Ads Management</h1>
+                    <p>Manage homepage advertisement banners</p>
+                </div>
+
+                <div class="ads-container">
+                    <div class="ads-grid" id="adsGrid">
+                        
+                    </div>
+                    <button class="btn btn-primary add-ad-btn" onclick="adminManager.showAddAdModal()">
+                        ➕ Add New Ad
+                    </button>
+                </div>
+            </div>
+
+            <div class="admin-content-section" id="news-section">
+                <div class="section-header">
+                    <h1>📰 News Banner Management</h1>
+                    <p>Manage scrolling news ticker content</p>
+                </div>
+
+                <div class="news-container">
+                    <div class="news-list" id="newsList">
+                        
+                    </div>
+                    <button class="btn btn-primary" onclick="adminManager.showAddNewsModal()">
+                        ➕ Add News Item
+                    </button>
+                </div>
+            </div>
+
+            <div class="admin-content-section" id="settings-section">
+                <div class="section-header">
+                    <h1>⚙️ Platform Settings</h1>
+                    <p>Configure platform-wide settings</p>
+                </div>
+
+                <div class="settings-container">
+                    <form id="settingsForm">
+                        <div class="settings-section">
+                            <h3>Platform Information</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="platformName">Platform Name</label>
+                                    <input type="text" id="platformName" name="platform_name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="platformTagline">Platform Tagline</label>
+                                    <input type="text" id="platformTagline" name="platform_tagline">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="disclaimerText">Disclaimer Text</label>
+                                <textarea id="disclaimerText" name="disclaimer_text" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="settings-section">
+                            <h3>Business Settings</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="organiserFee">Monthly Organiser Fee (₹)</label>
+                                    <input type="number" id="organiserFee" name="organiser_monthly_fee">
+                                </div>
+                                <div class="form-group">
+                                    <label for="maxFeaturedGames">Max Featured Games</label>
+                                    <input type="number" id="maxFeaturedGames" name="max_featured_games">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-section">
+                            <h3>Ad Network Scripts</h3>
+                            <div class="ad-scripts">
+                                <div class="form-group">
+                                    <label for="googleAdsense">Google AdSense Script</label>
+                                    <textarea id="googleAdsense" name="google_adsense" rows="4" placeholder="Paste your Google AdSense script here"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="tapjoyScript">TapJoy Script</label>
+                                    <textarea id="tapjoyScript" name="tapjoy" rows="4" placeholder="Paste your TapJoy script here"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="metaScript">Meta Ads Script</label>
+                                    <textarea id="metaScript" name="meta" rows="4" placeholder="Paste your Meta ads script here"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Settings</button>
+                            <button type="button" class="btn btn-secondary" onclick="adminManager.loadSettings()">Reset</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="admin-content-section" id="analytics-section">
+                <div class="section-header">
+                    <h1>📈 Platform Analytics</h1>
+                    <p>Detailed platform performance metrics</p>
+                </div>
+
+                <div class="analytics-container">
+                    <div class="analytics-cards">
+                        <div class="analytics-card">
+                            <h3>Revenue Analytics</h3>
+                            <div class="analytics-stats">
+                                <div class="analytics-stat">
+                                    <span class="stat-label">This Month</span>
+                                    <span class="stat-value" id="monthlyRevenue">₹0</span>
+                                </div>
+                                <div class="analytics-stat">
+                                    <span class="stat-label">Total Revenue</span>
+                                    <span class="stat-value" id="totalRevenue">₹0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="analytics-card">
+                            <h3>User Growth</h3>
+                            <div class="analytics-stats">
+                                <div class="analytics-stat">
+                                    <span class="stat-label">New Users</span>
+                                    <span class="stat-value" id="newUsers">0</span>
+                                </div>
+                                <div class="analytics-stat">
+                                    <span class="stat-label">Active Users</span>
+                                    <span class="stat-value" id="activeUsers">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="export-section">
+                        <h3>Data Export</h3>
+                        <div class="export-buttons">
+                            <button class="btn btn-secondary" onclick="adminManager.exportAllData()">
+                                📊 Export All Data
+                            </button>
+                            <button class="btn btn-secondary" onclick="adminManager.exportData('financial')">
+                                💰 Financial Report
+                            </button>
+                            <button class="btn btn-secondary" onclick="adminManager.exportData('users')">
+                                👥 User Report
+                            </button>
+                            <button class="btn btn-secondary" onclick="adminManager.exportData('games')">
+                                🎮 Games Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="addFeaturedModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddFeaturedModal()">&times;</span>
+            <h2 id="featuredModalTitle">Add Featured Game</h2>
+            <form id="addFeaturedForm">
+                <input type="hidden" id="featuredType">
+                
+                <div class="form-group">
+                    <label for="featuredGameSelect">Select Game</label>
+                    <select id="featuredGameSelect" name="gameId" required>
+                        <option value="">Choose a game...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="featuredOrder">Display Order</label>
+                    <input type="number" id="featuredOrder" name="order" min="1" max="15" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="hasGlowDot">
+                        Show Glow Dot (Premium Feature)
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="hasGlowShadow">
+                        Show Glow Shadow (Premium Feature)
+                    </label>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add to Featured</button>
+                    <button type="button" onclick="closeAddFeaturedModal()" class="btn btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="addAdModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddAdModal()">&times;</span>
+            <h2>Add Sponsored Ad</h2>
+            <form id="addAdForm">
+                <div class="form-group">
+                    <label for="adTitle">Ad Title</label>
+                    <input type="text" id="adTitle" name="title" placeholder="Optional ad title">
+                </div>
+                
+                <div class="form-group">
+                    <label for="adBannerUrl">Banner Image URL</label>
+                    <input type="url" id="adBannerUrl" name="bannerImageUrl" required placeholder="https://example.com/banner.jpg">
+                </div>
+                
+                <div class="form-group">
+                    <label for="adLinkUrl">Link URL</label>
+                    <input type="url" id="adLinkUrl" name="linkUrl" required placeholder="https://example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="adOrder">Display Order</label>
+                    <input type="number" id="adOrder" name="displayOrder" min="1" max="4" required>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Advertisement</button>
+                    <button type="button" onclick="closeAddAdModal()" class="btn btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="addNewsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddNewsModal()">&times;</span>
+            <h2>Add News Item</h2>
+            <form id="addNewsForm">
+                <div class="form-group">
+                    <label for="newsText">News Text</label>
+                    <input type="text" id="newsText" name="text" required placeholder="Enter news text..." maxlength="500">
+                </div>
+                
+                <div class="form-group">
+                    <label for="newsLink">Link URL (Optional)</label>
+                    <input type="url" id="newsLink" name="linkUrl" placeholder="https://example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="newsOrder">Display Order</label>
+                    <input type="number" id="newsOrder" name="displayOrder" min="1" max="10" required>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add News Item</button>
+                    <button type="button" onclick="closeAddNewsModal()" class="btn btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload to Google Drive Storage</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background: #f5f5f5;
+            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        .upload-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            color: #333;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .upload-container h2,
+        .upload-container h3,
+        .upload-container h4,
+        .upload-container h5,
+        .upload-container p,
+        .upload-container ul,
+        .upload-container li,
+        .upload-container label,
+        .upload-container span {
+            color: #333 !important;
+        }
+        
+        .upload-container .text-muted {
+            color: #6c757d !important;
+        }
+        
+        .file-type-selector {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .file-type-selector h4 {
+            color: #333 !important;
+        }
+        
+        .file-type-option {
+            display: inline-block;
+            margin: 5px;
+            padding: 10px 20px;
+            background: #e9ecef;
+            color: #333;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-type-option.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .drop-zone {
+            border: 3px dashed #007bff;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            margin: 30px 0;
+            background: #f8f9ff;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: #0056b3;
+            background: #e6f3ff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,123,255,0.15);
+        }
+        
+        .drop-zone.dragover {
+            border-style: solid;
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        
+        .drop-zone .drop-content h3 {
+            margin: 10px 0;
+            color: #007bff !important;
+        }
+        
+        .drop-zone .drop-content p {
+            color: #6c757d !important;
+        }
+        
+        #browseBtn:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+        }
+        
+        .file-list {
+            margin: 20px 0;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            color: #333;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .file-item strong,
+        .file-item small {
+            color: #333 !important;
+        }
+        
+        .compression-info {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .compression-info h4,
+        .compression-info p,
+        .compression-info strong {
+            color: #333 !important;
+        }
+        
+        .upload-progress {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .storage-info {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .storage-info h4,
+        .storage-info h5,
+        .storage-info ul,
+        .storage-info li,
+        .storage-info p,
+        .storage-info strong {
+            color: #333 !important;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        
+        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #333 !important;">☁️ Upload to Google Drive Storage</h2>
+            <a href="/organiser.html" class="btn btn-secondary" style="text-decoration: none;">
+                ← Back to Dashboard
+            </a>
+        </div>
+        <p id="gameInfo" class="text-muted">Loading game information...</p>
+        
+        <div class="storage-info">
+            <h4>💰 Cost-Effective Storage Solution:</h4>
+            <ul>
+                <li><strong>✅ Uses your 2TB Google Drive</strong> - No additional storage costs</li>
+                <li><strong>🗜️ Auto-compression</strong> - Reduces file sizes by 30-70%</li>
+                <li><strong>🕒 Auto-cleanup</strong> - Files deleted after 2 days automatically</li>
+                <li><strong>🔒 Secure access</strong> - Only approved users can download</li>
+            </ul>
+            
+            <div style="background: #fff3cd; padding: 15px; border-radius: 6px; border-left: 4px solid #ffc107; margin-top: 15px;">
+                <h5 style="margin: 0 0 10px 0;">📋 How to Upload:</h5>
+                <p style="margin: 0;">
+                    <strong>Method 1:</strong> Drag files from your computer and drop them in the area below<br>
+                    <strong>Method 2:</strong> Click the "Browse Files from PC" button to select files
+                </p>
+            </div>
+        </div>
+        
+        <div class="file-type-selector">
+            <h4>📁 Select File Type:</h4>
+            <div class="file-type-option active" data-type="sheets">
+                📄 Game Sheets
+            </div>
+            <div class="file-type-option" data-type="banners">
+                🎨 Banners
+            </div>
+            <div class="file-type-option" data-type="images">
+                🖼️ Images
+            </div>
+        </div>
+        
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-content">
+                <div style="font-size: 48px; margin-bottom: 15px;">📤</div>
+                <h3>Drag & Drop Files Here</h3>
+                <div style="margin: 20px 0; font-size: 18px; font-weight: bold;">
+                    <span style="background: #fff; padding: 0 15px; border-radius: 20px; border: 2px solid #007bff;">OR</span>
+                </div>
+                <button type="button" class="btn btn-primary" id="browseBtn" style="margin-bottom: 15px; font-size: 16px;">
+                    📁 Browse Files from PC
+                </button>
+                <p class="text-muted">
+                    Supported: Images (JPG, PNG, WebP, GIF), PDF, Word Documents<br>
+                    Max size: 50MB per file (will be compressed automatically)
+                </p>
+            </div>
+            <input type="file" id="fileInput" multiple accept=".jpg,.jpeg,.png,.webp,.gif,.pdf,.doc,.docx" style="display: none;">
+        </div>
+        
+        <div id="fileList" class="file-list"></div>
+        
+        <div id="compressionInfo" class="compression-info" style="display: none;">
+            <h4>📦 Compression Preview:</h4>
+            <p id="compressionStats"></p>
+        </div>
+        
+        <div id="uploadProgress" class="upload-progress" style="display: none;">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="upload-actions">
+            <button id="uploadBtn" class="btn btn-primary" disabled>
+                ☁️ Upload to Google Drive
+            </button>
+            <button id="clearBtn" class="btn btn-secondary">
+                🗑️ Clear All
+            </button>
+            <a href="/organiser.html" class="btn btn-secondary">
+                ← Back to Dashboard
+            </a>
+        </div>
+        
+        <div id="uploadResults" style="display: none; margin-top: 30px;">
+            <h4>✅ Upload Complete!</h4>
+            <div id="resultsContent"></div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        class DriveUploadManager {
+            constructor() {
+                this.gameId = new URLSearchParams(window.location.search).get('gameId');
+                this.selectedFiles = [];
+                this.selectedFileType = 'sheets';
+                this.initializeElements();
+                this.setupEventListeners();
+                this.loadGameInfo();
+            }
+
+            initializeElements() {
+                this.dropZone = document.getElementById('dropZone');
+                this.fileInput = document.getElementById('fileInput');
+                this.fileList = document.getElementById('fileList');
+                this.uploadBtn = document.getElementById('uploadBtn');
+                this.clearBtn = document.getElementById('clearBtn');
+                this.progressBar = document.getElementById('progressBar');
+                this.uploadProgress = document.getElementById('uploadProgress');
+                this.compressionInfo = document.getElementById('compressionInfo');
+                this.compressionStats = document.getElementById('compressionStats');
+                this.uploadResults = document.getElementById('uploadResults');
+                this.resultsContent = document.getElementById('resultsContent');
+            }
+
+            setupEventListeners() {
+                
+                document.querySelectorAll('.file-type-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        document.querySelectorAll('.file-type-option').forEach(opt => opt.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.selectedFileType = e.target.dataset.type;
+                        this.updateDropZoneText();
+                    });
+                });
+
+                document.getElementById('browseBtn').addEventListener('click', (e) => {
+                    e.stopPropagation(); 
+                    this.fileInput.click();
+                });
+
+                this.dropZone.addEventListener('click', (e) => {
+                    
+                    if (e.target.id !== 'browseBtn') {
+                        this.fileInput.click();
+                    }
+                });
+
+                this.dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'copy';
+                    this.dropZone.classList.add('dragover');
+
+                    const h3 = this.dropZone.querySelector('h3');
+                    if (h3 && !h3.textContent.includes('Drop')) {
+                        h3.textContent = '📥 Drop Files Here!';
+                    }
+                });
+                
+                this.dropZone.addEventListener('dragleave', (e) => {
+                    
+                    if (!this.dropZone.contains(e.relatedTarget)) {
+                        this.dropZone.classList.remove('dragover');
+                        
+                        const h3 = this.dropZone.querySelector('h3');
+                        if (h3) {
+                            h3.textContent = 'Drag & Drop Files Here';
+                        }
+                    }
+                });
+                
+                this.dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    this.dropZone.classList.remove('dragover');
+
+                    const h3 = this.dropZone.querySelector('h3');
+                    if (h3) {
+                        h3.textContent = 'Drag & Drop Files Here';
+                    }
+                    
+                    this.handleFiles(e.dataTransfer.files);
+
+                    if (e.dataTransfer.files.length > 0) {
+                        this.showDropFeedback(e.dataTransfer.files.length);
+                    }
+                });
+
+                this.fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        this.handleFiles(e.target.files);
+                        
+                        this.showDropFeedback(e.target.files.length);
+                    }
+                    
+                    e.target.value = '';
+                });
+
+                this.uploadBtn.addEventListener('click', () => this.uploadFiles());
+                this.clearBtn.addEventListener('click', () => this.clearFiles());
+            }
+
+            async loadGameInfo() {
+                try {
+                    if (!this.gameId) {
+                        const gameInfoEl = document.getElementById('gameInfo');
+                        if (gameInfoEl) {
+                            gameInfoEl.textContent = '❌ No game ID provided';
+                        }
+                        return;
+                    }
+
+                    const sanitizedGameId = String(this.gameId).replace(/[^a-zA-Z0-9-]/g, '');
+
+                    const gameInfoEl = document.getElementById('gameInfo');
+                    if (gameInfoEl) {
+                        gameInfoEl.innerHTML = `
+                            <strong>Game ID:</strong> ${sanitizedGameId} | 
+                            <strong>Upload Type:</strong> ${this.selectedFileType}
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Failed to load game info:', error);
+                    const gameInfoEl = document.getElementById('gameInfo');
+                    if (gameInfoEl) {
+                        gameInfoEl.textContent = 'Failed to load game information';
+                    }
+                }
+            }
+
+            updateDropZoneText() {
+                const typeTexts = {
+                    sheets: 'Game Sheets (PDF files)',
+                    banners: 'Banner Images (JPG, PNG, WebP)',
+                    images: 'Game Images (All image formats)'
+                };
+                
+                const dropContent = this.dropZone.querySelector('.drop-content h3');
+                dropContent.textContent = `📤 Drop ${typeTexts[this.selectedFileType]} Here`;
+            }
+
+            handleFiles(files) {
+                Array.from(files).forEach(file => {
+                    if (this.validateFile(file)) {
+                        this.selectedFiles.push(file);
+                    }
+                });
+                
+                this.renderFileList();
+                this.updateUploadButton();
+                this.estimateCompression();
+            }
+
+            validateFile(file) {
+                const maxSize = 50 * 1024 * 1024; 
+
+                if (!file || !file.name) {
+                    app.showNotification('Invalid file', 'error');
+                    return false;
+                }
+
+                if (file.size <= 0) {
+                    app.showNotification(`File "${file.name}" is empty`, 'error');
+                    return false;
+                }
+                
+                if (file.size > maxSize) {
+                    app.showNotification(`File "${file.name}" is too large. Max size: 50MB`, 'error');
+                    return false;
+                }
+
+                const allowedTypes = {
+                    sheets: ['application/pdf'],
+                    banners: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'],
+                    images: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+                };
+
+                if (!allowedTypes[this.selectedFileType]) {
+                    app.showNotification(`Invalid file type selection`, 'error');
+                    return false;
+                }
+
+                if (!allowedTypes[this.selectedFileType].includes(file.type)) {
+                    app.showNotification(`File type "${file.type}" not allowed for ${this.selectedFileType}. Allowed types: ${allowedTypes[this.selectedFileType].join(', ')}`, 'error');
+                    return false;
+                }
+
+                return true;
+            }
+
+            renderFileList() {
+                this.fileList.innerHTML = '';
+                
+                this.selectedFiles.forEach((file, index) => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+
+                    const fileInfo = document.createElement('div');
+                    const fileName = document.createElement('strong');
+                    fileName.textContent = file.name; 
+                    const fileDetails = document.createElement('small');
+                    fileDetails.textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB - ${file.type}`;
+                    
+                    fileInfo.appendChild(fileName);
+                    fileInfo.appendChild(document.createElement('br'));
+                    fileInfo.appendChild(fileDetails);
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'btn btn-danger btn-sm';
+                    removeBtn.textContent = '🗑️ Remove';
+                    removeBtn.onclick = () => this.removeFile(index);
+                    
+                    fileItem.appendChild(fileInfo);
+                    fileItem.appendChild(removeBtn);
+                    this.fileList.appendChild(fileItem);
+                });
+            }
+
+            removeFile(index) {
+                this.selectedFiles.splice(index, 1);
+                this.renderFileList();
+                this.updateUploadButton();
+                this.estimateCompression();
+            }
+
+            clearFiles() {
+                this.selectedFiles = [];
+                this.renderFileList();
+                this.updateUploadButton();
+                this.compressionInfo.style.display = 'none';
+            }
+
+            showDropFeedback(fileCount) {
+                
+                const feedback = document.createElement('div');
+                feedback.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #28a745;
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    font-weight: bold;
+                    z-index: 1000;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    transform: translateX(100%);
+                    transition: transform 0.3s ease;
+                `;
+                feedback.textContent = `✅ ${fileCount} file${fileCount > 1 ? 's' : ''} added!`;
+                
+                document.body.appendChild(feedback);
+
+                setTimeout(() => {
+                    feedback.style.transform = 'translateX(0)';
+                }, 100);
+
+                setTimeout(() => {
+                    feedback.style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        if (feedback.parentNode) {
+                            feedback.parentNode.removeChild(feedback);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+
+            updateUploadButton() {
+                this.uploadBtn.disabled = this.selectedFiles.length === 0;
+                this.uploadBtn.textContent = this.selectedFiles.length > 0 
+                    ? `☁️ Upload ${this.selectedFiles.length} ${this.selectedFileType} to Google Drive`
+                    : '☁️ Upload to Google Drive';
+            }
+
+            estimateCompression() {
+                if (this.selectedFiles.length === 0) {
+                    this.compressionInfo.style.display = 'none';
+                    return;
+                }
+
+                let totalSize = 0;
+                let estimatedCompressed = 0;
+
+                this.selectedFiles.forEach(file => {
+                    totalSize += file.size;
+
+                    if (file.type.startsWith('image/')) {
+                        estimatedCompressed += file.size * 0.4; 
+                    } else if (file.type === 'application/pdf') {
+                        estimatedCompressed += file.size * 0.8; 
+                    } else {
+                        estimatedCompressed += file.size; 
+                    }
+                });
+
+                const savings = totalSize - estimatedCompressed;
+                const compressionRatio = ((savings / totalSize) * 100).toFixed(1);
+
+                this.compressionStats.innerHTML = `
+                    <strong>Original Size:</strong> ${(totalSize / 1024 / 1024).toFixed(2)} MB<br>
+                    <strong>Estimated Compressed:</strong> ${(estimatedCompressed / 1024 / 1024).toFixed(2)} MB<br>
+                    <strong>Estimated Savings:</strong> ${(savings / 1024 / 1024).toFixed(2)} MB (${compressionRatio}% reduction)
+                `;
+                
+                this.compressionInfo.style.display = 'block';
+            }
+
+            async uploadFiles() {
+                if (this.selectedFiles.length === 0) {
+                    app.showNotification('Please select files to upload', 'warning');
+                    return;
+                }
+
+                if (!this.gameId) {
+                    app.showNotification('Game ID is missing. Please go back and try again.', 'error');
+                    return;
+                }
+
+                if (!this.selectedFileType || !['sheets', 'banners', 'images'].includes(this.selectedFileType)) {
+                    app.showNotification('Please select a valid file type', 'error');
+                    return;
+                }
+
+                const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+                if (!token) {
+                    app.showNotification('Please login to upload files', 'error');
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 2000);
+                    return;
+                }
+                
+                console.log('🔐 Upload: Token found, proceeding with upload...');
+
+                for (const file of this.selectedFiles) {
+                    if (!this.validateFile(file)) {
+                        app.showNotification('Some files are invalid. Please remove them and try again.', 'error');
+                        return;
+                    }
+                }
+
+                try {
+                    this.uploadBtn.disabled = true;
+                    this.uploadProgress.style.display = 'block';
+                    this.progressBar.style.width = '10%';
+
+                    const formData = new FormData();
+                    formData.append('fileType', this.selectedFileType);
+
+                    for (const file of this.selectedFiles) {
+                        if (!this.validateFile(file)) {
+                            throw new Error(`Invalid file: ${file.name}`);
+                        }
+                    }
+                    
+                    this.selectedFiles.forEach(file => {
+                        formData.append('files', file);
+                    });
+
+                    this.progressBar.style.width = '50%';
+
+                    const response = await fetch(`/api/organiser/games/${this.gameId}/upload-to-drive`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    this.progressBar.style.width = '90%';
+
+                    if (!response.ok) {
+                        const errorResult = await response.json();
+                        throw new Error(errorResult.message || errorResult.error || 'Upload failed');
+                    }
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.progressBar.style.width = '100%';
+                        
+                        setTimeout(() => {
+                            this.showUploadResults(result);
+                            this.uploadProgress.style.display = 'none';
+                            this.progressBar.style.width = '0%';
+                        }, 500);
+
+                        app.showNotification(`✅ Successfully uploaded ${result.totalItems} ${result.fileType}!`, 'success');
+                        
+                    } else {
+                        throw new Error(result.error || 'Upload failed');
+                    }
+
+                } catch (error) {
+                    console.error('💥 Upload error:', error);
+
+                    if (error.message && (error.message.includes('401') || error.message.includes('Unauthorized') || error.message.includes('token'))) {
+                        app.showNotification('❌ Session expired. Please login again.', 'error');
+                        setTimeout(() => {
+                            window.location.href = '/login.html';
+                        }, 2000);
+                    } else {
+                        app.showNotification(`❌ Upload failed: ${error.message || 'Please try again'}`, 'error');
+                    }
+                    
+                    this.uploadProgress.style.display = 'none';
+                    this.uploadBtn.disabled = false;
+                }
+            }
+
+            showUploadResults(result) {
+                this.resultsContent.innerHTML = `
+                    <div class="storage-info">
+                        <h5>📊 Upload Summary:</h5>
+                        <ul>
+                            <li><strong>Files Uploaded:</strong> ${result.totalItems} ${result.fileType}</li>
+                            <li><strong>Storage Provider:</strong> ${result.storageInfo.provider}</li>
+                            <li><strong>Auto-Delete:</strong> ${result.autoDeleteDate}</li>
+                            ${result.compressionStats ? `
+                                <li><strong>Compression:</strong> ${result.compressionStats.compressionRatio}% reduction</li>
+                                <li><strong>Space Saved:</strong> ${(result.compressionStats.savings / 1024 / 1024).toFixed(2)} MB</li>
+                            ` : ''}
+                        </ul>
+                        
+                        <div style="margin-top: 15px;">
+                            <button class="btn btn-success" onclick="location.reload()">
+                                📤 Upload More Files
+                            </button>
+                            <a href="/organiser.html" class="btn btn-primary">
+                                ← Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                `;
+                
+                this.uploadResults.style.display = 'block';
+                this.clearFiles();
+            }
+        }
+
+        let driveUpload;
+        document.addEventListener('DOMContentLoaded', () => {
+            driveUpload = new DriveUploadManager();
+        });
+    </script>
+</body>
+</html>

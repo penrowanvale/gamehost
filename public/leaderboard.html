@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - GameBlast Mobile</title>
+    <meta name="description" content="View top winners and their prizes on GameBlast Mobile leaderboard.">
+
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/leaderboard.css">
+</head>
+<body>
+    
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">GameBlast Mobile</a>
+                
+                <nav class="nav-menu" id="navMenu">
+                    <a href="/">Home</a>
+                    <a href="/games">Games</a>
+                    <a href="/how-to-play">How to Play</a>
+                    <a href="/leaderboard" class="active">Leaderboard</a>
+                    <a href="/organiser">Organiser</a>
+                </nav>
+                
+                <div class="user-menu">
+                    <div id="authButtons">
+                        <a href="/login" class="btn btn-secondary">Login</a>
+                    </div>
+                    <div id="userMenu" style="display: none;"></div>
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <div class="container">
+            <h1>🏆 Leaderboard</h1>
+            <p>Celebrate our champions and their amazing wins!</p>
+        </div>
+    </section>
+
+    <div class="ad-section">
+        <div class="ad-placeholder">Advertisement Space</div>
+    </div>
+
+    <section class="leaderboard-section">
+        <div class="container">
+
+            <div class="loading-container" id="loadingContainer">
+                <div class="loading"></div>
+                <p>Loading leaderboard...</p>
+            </div>
+
+            <div class="podium-section" id="podiumSection" style="display: none;">
+                <h2 class="section-title">🥇 Top Champions</h2>
+                <div class="podium">
+                    <div class="podium-place second" id="secondPlace">
+                        <div class="podium-rank">2</div>
+                        <div class="podium-info">
+                            <div class="winner-name">-</div>
+                            <div class="winner-prize">₹0</div>
+                            <div class="winner-game">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="podium-place first" id="firstPlace">
+                        <div class="podium-rank">1</div>
+                        <div class="crown">👑</div>
+                        <div class="podium-info">
+                            <div class="winner-name">-</div>
+                            <div class="winner-prize">₹0</div>
+                            <div class="winner-game">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="podium-place third" id="thirdPlace">
+                        <div class="podium-rank">3</div>
+                        <div class="podium-info">
+                            <div class="winner-name">-</div>
+                            <div class="winner-prize">₹0</div>
+                            <div class="winner-game">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ad-section">
+                <div class="ad-placeholder">Advertisement Space</div>
+            </div>
+
+            <div class="winners-table-section" id="winnersTableSection" style="display: none;">
+                <div class="table-header">
+                    <h2 class="section-title">🎯 All Winners</h2>
+                    <div class="table-filters">
+                        <select id="sortFilter" class="filter-select">
+                            <option value="recent">Most Recent</option>
+                            <option value="prize-high">Highest Prize</option>
+                            <option value="prize-low">Lowest Prize</option>
+                        </select>
+                        <input type="text" id="searchWinners" placeholder="Search winners..." class="search-input">
+                    </div>
+                </div>
+
+                <div class="winners-table-container">
+                    <table class="winners-table" id="winnersTable">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Winner</th>
+                                <th>Game</th>
+                                <th>Prize</th>
+                                <th>Organiser</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="winnersTableBody">
+                            
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+                    <button class="btn btn-primary" id="loadMoreBtn">Load More Winners</button>
+                </div>
+            </div>
+
+            <div class="no-winners" id="noWinners" style="display: none;">
+                <div class="no-winners-content">
+                    <h3>🎮 No Winners Yet</h3>
+                    <p>Be the first to win and appear on our leaderboard!</p>
+                    <a href="/games" class="btn btn-primary">Join Games Now</a>
+                </div>
+            </div>
+
+            <div class="ad-section">
+                <div class="ad-placeholder">Advertisement Space</div>
+            </div>
+
+            <div class="stats-section">
+                <h2 class="section-title">📊 Platform Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-value" id="totalGames">0</div>
+                        <div class="stat-label">Games Played</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-value" id="totalWinners">0</div>
+                        <div class="stat-label">Total Winners</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value" id="totalPrizes">₹0</div>
+                        <div class="stat-label">Prizes Distributed</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value" id="totalPlayers">0</div>
+                        <div class="stat-label">Active Players</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="winnerModal" class="modal">
+        <div class="modal-content winner-modal">
+            <span class="close" onclick="closeWinnerModal()">&times;</span>
+            <div id="winnerModalContent">
+                
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="logo">GameBlast Mobile</h3>
+                    <p class="platform-tagline">Your Ultimate Mobile Gaming Experience</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/games">Games</a></li>
+                        <li><a href="/how-to-play">How to Play</a></li>
+                        <li><a href="/leaderboard">Leaderboard</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="/privacy-policy">Privacy Policy</a></li>
+                        <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                        <li><a href="/disclaimer">Disclaimer</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 GameBlast Mobile. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/leaderboard.js"></script>
+</body>
+</html>

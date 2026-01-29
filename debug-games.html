@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Games API</title>
+</head>
+<body>
+    <h1>Games API Debug</h1>
+    <button onclick="testPublicGames()">Test Public Games API</button>
+    <button onclick="testImageConversion()">Test Image URL Conversion</button>
+    
+    <div id="results"></div>
+
+    <script>
+        async function testPublicGames() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<p>Loading...</p>';
+            
+            try {
+                const response = await fetch('/api/games/public');
+                const data = await response.json();
+                
+                results.innerHTML = `
+                    <h2>Public Games API Response:</h2>
+                    <p><strong>Total Games:</strong> ${data.games?.length || 0}</p>
+                    <h3>Games List:</h3>
+                    <ul>
+                        ${data.games?.map(game => `
+                            <li>
+                                <strong>${game.name}</strong> - ${game.status} - ${game.game_date}<br>
+                                Banner: <code>${game.banner_image_url}</code><br>
+                                Converted: <code>${getValidImageUrl(game.banner_image_url)}</code><br>
+                                <img src="${getValidImageUrl(game.banner_image_url)}" style="width: 100px; height: 60px; object-fit: cover; border: 1px solid #ccc; margin: 5px 0;">
+                            </li>
+                        `).join('') || '<li>No games found</li>'}
+                    </ul>
+                `;
+            } catch (error) {
+                results.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        function testImageConversion() {
+            const testUrls = [
+                'https://drive.google.com/file/d/1ehK_XHZCvoA4or78h4N7-6dkTwEQq66e/view?usp=sharing',
+                '/images/game-banner-1.jpg',
+                'https://ibb.co/PGfpbNHj'
+            ];
+            
+            const results = document.getElementById('results');
+            results.innerHTML = `
+                <h2>Image URL Conversion Test:</h2>
+                <ul>
+                    ${testUrls.map(url => `
+                        <li>
+                            <strong>Original:</strong> <code>${url}</code><br>
+                            <strong>Converted:</strong> <code>${getValidImageUrl(url)}</code><br>
+                            <img src="${getValidImageUrl(url)}" style="width: 100px; height: 60px; object-fit: cover; border: 1px solid #ccc; margin: 5px 0;">
+                        </li>
+                    `).join('')}
+                </ul>
+            `;
+        }
+
+        function getValidImageUrl(imageUrl) {
+            if (!imageUrl) return '/images/default-game.svg';
+
+            if (imageUrl.startsWith('/images/') && imageUrl.endsWith('.jpg')) {
+                return imageUrl.replace('.jpg', '.svg');
+            }
+
+            if (imageUrl.startsWith('http')) {
+                
+                if (imageUrl.includes('ibb.co/')) {
+                    
+                    const match = imageUrl.match(/ibb\.co\/([a-zA-Z0-9]+)/);
+                    if (match) {
+                        
+                        return `https://i.ibb.co/${match[1]}.jpg`;
+                    }
+                    console.warn('Invalid ibb.co URL:', imageUrl);
+                    return '/images/default-game.svg';
+                }
+
+                if (imageUrl.includes('drive.google.com/file/')) {
+                    const fileId = imageUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                    if (fileId) {
+                        return `https://drive.google.com/uc?export=view&id=${fileId[1]}`;
+                    }
+                    console.warn('Invalid Google Drive URL:', imageUrl);
+                    return '/images/default-game.svg';
+                }
+
+                if (imageUrl.includes('drive.google.com') && imageUrl.includes('view?usp=sharing')) {
+                    const fileId = imageUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                    if (fileId) {
+                        return `https://drive.google.com/uc?export=view&id=${fileId[1]}`;
+                    }
+                    console.warn('Invalid Google Drive sharing URL:', imageUrl);
+                    return '/images/default-game.svg';
+                }
+
+                if (imageUrl.match(/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i)) {
+                    return imageUrl; 
+                }
+                
+                console.warn('Invalid image URL format:', imageUrl);
+                return '/images/default-game.svg';
+            }
+            
+            return imageUrl;
+        }
+    </script>
+</body>
+</html>

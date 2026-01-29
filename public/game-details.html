@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Details - GameBlast Mobile</title>
+    <meta name="description" content="Join this exciting game and win amazing prizes on GameBlast Mobile.">
+
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/game-details.css">
+</head>
+<body>
+    
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">GameBlast Mobile</a>
+                
+                <nav class="nav-menu" id="navMenu">
+                    <a href="/">Home</a>
+                    <a href="/games">Games</a>
+                    <a href="/how-to-play">How to Play</a>
+                    <a href="/leaderboard">Leaderboard</a>
+                    <a href="/organiser">Organiser</a>
+                </nav>
+                
+                <div class="user-menu">
+                    <div id="authButtons">
+                        <a href="/login" class="btn btn-secondary">Login</a>
+                    </div>
+                    <div id="userMenu" style="display: none;"></div>
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading"></div>
+            <p>Loading game details...</p>
+        </div>
+    </div>
+
+    <div class="game-details-container" id="gameDetailsContainer" style="display: none;">
+
+        <section class="game-header">
+            <div class="container">
+                <div class="game-header-content">
+                    <div class="game-banner-section">
+                        <img id="gameBanner" src="" alt="Game Banner" class="game-banner-img">
+                        <div class="game-status-badge" id="gameStatusBadge"></div>
+                    </div>
+                    
+                    <div class="game-info-section">
+                        <h1 id="gameTitle" class="game-title"></h1>
+                        <div class="game-meta-grid">
+                            <div class="meta-card">
+                                <div class="meta-label">Prize Pool</div>
+                                <div class="meta-value prize" id="gamePrize"></div>
+                            </div>
+                            <div class="meta-card">
+                                <div class="meta-label">Players</div>
+                                <div class="meta-value" id="gameParticipants"></div>
+                            </div>
+                            <div class="meta-card">
+                                <div class="meta-label">Date</div>
+                                <div class="meta-value" id="gameDate"></div>
+                            </div>
+                            <div class="meta-card">
+                                <div class="meta-label">Time</div>
+                                <div class="meta-value" id="gameTime"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="organiser-card">
+                            <div class="organiser-info">
+                                <span class="organiser-label">Organised by:</span>
+                                <span class="organiser-name" id="organiserName"></span>
+                            </div>
+                            <div class="organiser-actions">
+                                <button id="contactOrganiserBtn" class="btn-contact" style="display: none;">
+                                    📱 Contact Organiser
+                                </button>
+                                <button id="joinMeetingBtn" class="btn-meeting" style="display: none;">
+                                    🎥 Join Meeting
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="ad-section">
+            <div class="ad-placeholder">Advertisement Space</div>
+        </div>
+
+        <section class="sheet-selection-section" id="sheetSelectionSection">
+            <div class="container">
+                <h2>Select Your Sheets</h2>
+                <p class="section-description">Choose the number of sheets you want to play with. More sheets increase your chances of winning!</p>
+                
+                <div class="pricing-cards">
+                    <div class="pricing-card" data-sheets="1">
+                        <div class="pricing-header">
+                            <h3>1 Sheet</h3>
+                            <div class="price" id="price1Sheet"></div>
+                        </div>
+                        <div class="pricing-features">
+                            <p>Perfect for beginners</p>
+                            <p>Single entry chance</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pricing-card popular" data-sheets="2">
+                        <div class="popular-badge">Most Popular</div>
+                        <div class="pricing-header">
+                            <h3>2 Sheets</h3>
+                            <div class="price" id="price2Sheets"></div>
+                            <div class="price-per">per sheet</div>
+                        </div>
+                        <div class="pricing-features">
+                            <p>Double your chances</p>
+                            <p>Better value</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pricing-card" data-sheets="3">
+                        <div class="pricing-header">
+                            <h3>3+ Sheets</h3>
+                            <div class="price" id="price3Sheets"></div>
+                            <div class="price-per">per sheet</div>
+                        </div>
+                        <div class="pricing-features">
+                            <p>Maximum chances</p>
+                            <p>Best value for money</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sheet-selector" id="sheetSelector" style="display: none;">
+                    <div class="selector-header">
+                        <h3>Select Exact Number of Sheets</h3>
+                        <div class="sheet-counter">
+                            <button class="counter-btn" id="decreaseSheets">-</button>
+                            <span class="sheet-count" id="sheetCount">3</span>
+                            <button class="counter-btn" id="increaseSheets">+</button>
+                        </div>
+                    </div>
+                    <div class="total-amount">
+                        Total Amount: <span id="totalAmount">₹0</span>
+                    </div>
+                </div>
+                
+                <div class="sheet-status-legend">
+                    <h4>Sheet Status Legend:</h4>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <div class="legend-box available"></div>
+                            <span>Available</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-box reserved"></div>
+                            <span>Reserved (Pending Payment)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-box sold"></div>
+                            <span>Sold (Payment Approved)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-box selected"></div>
+                            <span>Your Selection</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sheet-grid" id="sheetGrid">
+                    
+                </div>
+                
+                <div class="selection-summary" id="selectionSummary" style="display: none;">
+                    <div class="summary-content">
+                        <h4>Your Selection</h4>
+                        <div class="summary-details">
+                            <div class="summary-item">
+                                <span>Sheets Selected:</span>
+                                <span id="selectedSheetsCount">0</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Total Amount:</span>
+                                <span id="summaryTotalAmount">₹0</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-proceed" id="proceedToPayment">
+                            Proceed to Payment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="ad-section">
+            <div class="ad-placeholder">Advertisement Space</div>
+        </div>
+    </div>
+
+    <div id="paymentModal" class="modal">
+        <div class="modal-content payment-modal">
+            <span class="close" onclick="closePaymentModal()">&times;</span>
+            
+            <div class="payment-header">
+                <h2>Payment Verification</h2>
+                <p>Complete your payment and verify to join the game</p>
+            </div>
+            
+            <div class="payment-content">
+                <div class="qr-section">
+                    <h3>Scan QR Code to Pay</h3>
+                    <div class="qr-container">
+                        <img id="paymentQR" src="" alt="Payment QR Code" class="qr-code">
+                    </div>
+                    <p class="qr-instruction">Scan this QR code with any UPI app to make payment</p>
+                </div>
+                
+                <div class="payment-form">
+                    <form id="paymentVerificationForm">
+                        <div class="form-group">
+                            <label for="utrId">UTR/Transaction ID</label>
+                            <input type="text" id="utrId" name="utrId" required 
+                                   placeholder="Enter 12-digit UTR ID">
+                            <small>You can find UTR ID in your payment confirmation message</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="paymentPhone">Mobile Number Used for Payment</label>
+                            <input type="tel" id="paymentPhone" name="paymentPhone" required 
+                                   placeholder="Enter mobile number">
+                        </div>
+                        
+                        <div class="payment-summary">
+                            <div class="summary-row">
+                                <span>Sheets Selected:</span>
+                                <span id="paymentSheetsCount">0</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Total Amount:</span>
+                                <span id="paymentTotalAmount">₹0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-notice">
+                            <p><strong>Important:</strong> After submitting, the organiser will verify your payment. You'll be notified once approved and can then download your sheets.</p>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full">
+                            Submit for Verification
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loginRequiredModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLoginRequiredModal()">&times;</span>
+            <div class="login-required-content">
+                <h2>Login Required</h2>
+                <p>You need to login to participate in games.</p>
+                <div class="modal-actions">
+                    <a href="/login" class="btn btn-primary">Login Now</a>
+                    <button onclick="closeLoginRequiredModal()" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="logo">GameBlast Mobile</h3>
+                    <p class="platform-tagline">Your Ultimate Mobile Gaming Experience</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/games">Games</a></li>
+                        <li><a href="/how-to-play">How to Play</a></li>
+                        <li><a href="/leaderboard">Leaderboard</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 GameBlast Mobile. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/game-details.js"></script>
+</body>
+</html>
